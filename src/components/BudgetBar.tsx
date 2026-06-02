@@ -1,3 +1,4 @@
+import { Zap } from "lucide-react";
 import { BUDGET_CAP_USD } from "../../lib/ai/types";
 import { formatBudgetUsd } from "../hooks/useAiBudget";
 
@@ -6,6 +7,7 @@ interface BudgetBarProps {
   remainingUsd: number;
   percentUsed: number;
   webSearch?: boolean;
+  compact?: boolean;
 }
 
 export function BudgetBar({
@@ -13,22 +15,28 @@ export function BudgetBar({
   remainingUsd,
   percentUsed,
   webSearch,
+  compact,
 }: BudgetBarProps) {
   return (
-    <div className="budget-bar">
-      <div className="budget-bar-top">
-        <span className="budget-label">Search budget</span>
-        <span className="budget-amount">
-          ${formatBudgetUsd(remainingUsd)} left of ${BUDGET_CAP_USD}
+    <div className={`fuel-gauge ${compact ? "fuel-gauge--compact" : ""}`}>
+      <div className="fuel-gauge-top">
+        <span className="fuel-gauge-label">
+          <Zap size={11} />
+          Scout fuel
+        </span>
+        <span className="fuel-gauge-amount">
+          ${formatBudgetUsd(remainingUsd)} left
         </span>
       </div>
-      <div className="budget-track">
-        <div className="budget-fill" style={{ width: `${percentUsed}%` }} />
+      <div className="fuel-gauge-track">
+        <div className="fuel-gauge-fill" style={{ width: `${percentUsed}%` }} />
       </div>
-      <p className="budget-hint">
-        ${formatBudgetUsd(spentUsd)} used this device
-        {webSearch ? " · live web scan on" : " · add TAVILY_API_KEY for live web scan"}
-      </p>
+      {!compact && (
+        <p className="fuel-gauge-hint">
+          ${formatBudgetUsd(spentUsd)} used · ${BUDGET_CAP_USD} cap per device
+          {webSearch ? " · live web scan on" : ""}
+        </p>
+      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import type { ChatMessage } from "../types";
 import { useChatContext } from "../hooks/useChatContext";
 import { sendChatMessage } from "../services/ai";
 import { localFallback, QUICK_PROMPTS } from "../services/chat";
+
 export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
   const { context, budget } = useChatContext();
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -11,7 +12,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
       id: "welcome",
       role: "assistant",
       content:
-        "Context-aware assistant — I know your trip day, weather, and bookings. Ask anything.",
+        "Hey — I'm Scout. I know your day, weather, and what's booked. Ask me anything about the trip.",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -35,7 +36,8 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: "You've hit the ~$5 search budget on this device. Reset in settings or raise the cap in Anthropic console.",
+          content:
+            "Scout fuel's empty on this device (~$5 cap). Clear site data to reset, or raise your limit in the Anthropic console.",
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -96,7 +98,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: `Error: ${e instanceof Error ? e.message : "Unknown"}. Is ANTHROPIC_API_KEY set on the server?`,
+          content: `Scout hit a snag — ${e instanceof Error ? e.message : "try again in a moment"}.`,
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -110,7 +112,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
     <div className="chat-panel">
       <div className="chat-body">
         {!context.tripStartDate && (
-          <p className="context-hint">Set your trip start date on Today for smarter answers.</p>
+          <p className="context-hint">Set your trip start on Today — Scout gets sharper with dates.</p>
         )}
         <div className="quick-prompts">
           {QUICK_PROMPTS.map((q) => (
@@ -131,7 +133,11 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
               {formatMarkdownLite(m.content)}
             </div>
           ))}
-          {loading && <div className="msg assistant thinking">One moment…</div>}
+          {loading && (
+            <div className="msg assistant thinking">
+              <span className="scan-dots">Scouting</span>
+            </div>
+          )}
           <div ref={bottomRef} />
         </div>
       </div>
@@ -146,7 +152,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask with your trip context…"
+            placeholder="Ask Scout anything…"
             disabled={loading}
           />
           <button type="submit" className="btn-primary btn-send" disabled={loading || !input.trim()}>

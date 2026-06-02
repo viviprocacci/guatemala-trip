@@ -1,51 +1,66 @@
 import { useState } from "react";
+import { MessageCircle, Radar, Tag } from "lucide-react";
 import { useAiEnabled } from "../hooks/useAiEnabled";
 import { ChatPanel } from "./ChatPanel";
 import { DealsPanel } from "./DealsPanel";
 import { BudgetBar } from "./BudgetBar";
 import { useChatContext } from "../hooks/useChatContext";
 
-type AiMode = "chat" | "deals";
+type ScoutMode = "ask" | "hunt";
 
 export function AiView() {
-  const [mode, setMode] = useState<AiMode>("chat");
+  const [mode, setMode] = useState<ScoutMode>("ask");
   const { enabled, webSearch } = useAiEnabled();
   const { budget } = useChatContext();
 
   return (
-    <div className="ai-view">
-      <BudgetBar
-        spentUsd={budget.spentUsd}
-        remainingUsd={budget.remainingUsd}
-        percentUsed={budget.percentUsed}
-        webSearch={webSearch}
-      />
+    <div className="scout-view">
+      <header className="wow-hero scout-hero">
+        <div className="wow-hero-top">
+          <div>
+            <span className="wow-hero-eyebrow">Trip intel</span>
+            <h2 className="wow-hero-title">Scout</h2>
+            <p className="wow-hero-sub">
+              Knows your day, weather & bookings — ask anything or hunt live prices.
+            </p>
+          </div>
+          <Radar size={28} strokeWidth={1.25} className="wow-hero-icon" aria-hidden />
+        </div>
+        <BudgetBar
+          spentUsd={budget.spentUsd}
+          remainingUsd={budget.remainingUsd}
+          percentUsed={budget.percentUsed}
+          webSearch={webSearch}
+          compact
+        />
+      </header>
 
       {!enabled && (
-        <div className="nudge-card">
-          Live search runs on the server after Vercel deploy. Add <code>ANTHROPIC_API_KEY</code> in Vercel env
-          vars — never share the key in the app URL.
+        <div className="scout-offline-banner">
+          Offline tips only — deploy with API keys for live intel.
         </div>
       )}
 
-      <div className="ai-mode-tabs">
+      <div className="scout-mode-tabs">
         <button
           type="button"
-          className={`phrase-tab ${mode === "chat" ? "active" : ""}`}
-          onClick={() => setMode("chat")}
+          className={`scout-mode-tab ${mode === "ask" ? "active" : ""}`}
+          onClick={() => setMode("ask")}
         >
-          Chat
+          <MessageCircle size={15} />
+          Ask Scout
         </button>
         <button
           type="button"
-          className={`phrase-tab ${mode === "deals" ? "active" : ""}`}
-          onClick={() => setMode("deals")}
+          className={`scout-mode-tab ${mode === "hunt" ? "active" : ""}`}
+          onClick={() => setMode("hunt")}
         >
-          Deals
+          <Tag size={15} />
+          Price hunt
         </button>
       </div>
 
-      {mode === "chat" ? (
+      {mode === "ask" ? (
         <ChatPanel aiEnabled={enabled} />
       ) : (
         <DealsPanel aiEnabled={enabled} />

@@ -6,7 +6,7 @@ import {
   ExternalLink,
   Loader2,
   MapPin,
-  Search,
+  Radar,
   Sparkles,
   X,
 } from "lucide-react";
@@ -32,17 +32,17 @@ const TIER_LABEL: Record<Excursion["priceTier"], string> = {
 };
 
 const SEARCH_TYPES: { id: SearchType; label: string }[] = [
-  { id: "general", label: "All" },
-  { id: "activity", label: "Activities" },
-  { id: "hotel", label: "Hotels" },
-  { id: "deal", label: "Deals" },
+  { id: "general", label: "Everything" },
+  { id: "activity", label: "Adventures" },
+  { id: "hotel", label: "Stays" },
+  { id: "deal", label: "Steals" },
 ];
 
 const SEARCH_IDEAS = [
-  "Acatenango tour deals",
-  "Fly fishing Lake Atitlán",
+  "Best Acatenango tour right now",
+  "Fly fishing on the lake",
   "Antigua hostel under $25",
-  "Whitewater rafting",
+  "Class III rafting near Antigua",
 ];
 
 const QUICK_FILTERS = [
@@ -132,11 +132,11 @@ export function ExploreView() {
     setAiMessage(null);
 
     if (!aiEnabled) {
-      setAiMessage("Curated matches below. Live web search needs API keys on the server.");
+      setAiMessage("Curated picks below — go live with Scout for real-time prices.");
       return;
     }
     if (!budget.canUse) {
-      setAiMessage("~$5 search budget used on this device.");
+      setAiMessage("Scout fuel's empty. Clear site data to reset the meter.");
       return;
     }
 
@@ -160,10 +160,10 @@ export function ExploreView() {
       if (structured?.items.length) {
         setAiStructured(structured);
       } else {
-        setAiMessage("Could not parse results — try searching again.");
+        setAiMessage("Couldn't read the intel — try scanning again.");
       }
     } catch (e) {
-      setAiMessage(`Error: ${e instanceof Error ? e.message : "Search failed"}`);
+      setAiMessage(`Scan failed — ${e instanceof Error ? e.message : "try again"}.`);
     } finally {
       setSearchLoading(false);
     }
@@ -184,12 +184,16 @@ export function ExploreView() {
 
   return (
     <div className="explore-view">
-      <header className="explore-hero">
-        <div className="explore-hero-text">
-          <h2 className="explore-hero-title">Explore</h2>
-          <p className="explore-hero-sub">
-            {EXCURSIONS.length} curated picks · live web search
-          </p>
+      <header className="wow-hero explore-hero">
+        <div className="wow-hero-top">
+          <div>
+            <span className="wow-hero-eyebrow">Discover</span>
+            <h2 className="wow-hero-title">Explore</h2>
+            <p className="wow-hero-sub">
+              {EXCURSIONS.length} hand-picked adventures · Scout live scan
+            </p>
+          </div>
+          <Compass size={28} strokeWidth={1.25} className="wow-hero-icon" aria-hidden />
         </div>
 
         <form
@@ -199,19 +203,19 @@ export function ExploreView() {
             runSearch(searchQuery);
           }}
         >
-          <Search size={18} strokeWidth={1.5} className="explore-search-icon" />
+          <Radar size={17} strokeWidth={1.5} className="explore-search-icon" />
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search tours, hotels, deals…"
-            aria-label="Search explore"
+            placeholder="Scan tours, stays, steals…"
+            aria-label="Scout search explore"
           />
           <button
             type="submit"
-            className="explore-search-btn"
+            className="btn-scan explore-search-btn"
             disabled={searchLoading || !searchQuery.trim()}
           >
-            {searchLoading ? <Loader2 size={16} className="spin" /> : "Search"}
+            {searchLoading ? <Loader2 size={16} className="spin" /> : "Scan"}
           </button>
         </form>
       </header>
@@ -220,7 +224,7 @@ export function ExploreView() {
         <section className="explore-panel explore-panel--search">
           <div className="explore-panel-head">
             <div>
-              <span className="explore-panel-eyebrow">Web search</span>
+              <span className="explore-panel-eyebrow">Live intel</span>
               <h3 className="explore-panel-title">"{activeSearch}"</h3>
             </div>
             <button type="button" className="explore-clear-btn" onClick={clearSearch}>
@@ -245,7 +249,10 @@ export function ExploreView() {
           </div>
 
           {searchLoading && (
-            <p className="explore-ai-loading">Scanning the web for prices…</p>
+            <div className="explore-scan-loading">
+              <Radar size={14} className="spin" />
+              Scanning live prices across the web…
+            </div>
           )}
 
           {aiStructured && (
@@ -280,7 +287,7 @@ export function ExploreView() {
       ) : (
         <>
           <section className="explore-panel explore-panel--ideas">
-            <span className="explore-panel-eyebrow">Try searching</span>
+            <span className="explore-panel-eyebrow">Quick scans</span>
             <div className="explore-ideas">
               {SEARCH_IDEAS.map((idea) => (
                 <button
@@ -443,7 +450,7 @@ function ExploreAiResults({
     <div className="explore-ai-block">
       <div className="explore-ai-result-head">
         <strong>{data.title || `Results for "${query}"`}</strong>
-        {searchedWeb && <span className="deals-web-badge">Live web</span>}
+        {searchedWeb && <span className="intel-badge"><Radar size={10} /> Live intel</span>}
       </div>
 
       {data.intro && <p className="explore-ai-intro">{data.intro}</p>}
@@ -541,8 +548,8 @@ function ExploreModal({
         </ul>
         <div className="explore-modal-actions">
           {aiEnabled && (
-            <button type="button" className="btn-primary" onClick={() => onFindDeals(exc.name)}>
-              <Search size={14} /> Find best deals
+            <button type="button" className="btn-scan btn-scan--sm" onClick={() => onFindDeals(exc.name)}>
+              <Radar size={14} /> Hunt best price
             </button>
           )}
           {exc.lat != null && exc.lng != null && (

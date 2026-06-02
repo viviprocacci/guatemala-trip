@@ -1,8 +1,8 @@
 export const QUICK_PROMPTS = [
-  { label: "Translate", prompt: "How do I say 'boat to Santa Cruz' in Spanish?" },
-  { label: "Pack list", prompt: "What should I pack for Acatenango overnight?" },
-  { label: "Weather", prompt: "What should I wear today based on my weather and trip day?" },
-  { label: "My bookings", prompt: "Summarize what I still need to book based on my saved reservations." },
+  { label: "🇬🇹 Spanish", prompt: "How do I say 'boat to Santa Cruz' in Spanish?" },
+  { label: "🎒 Pack", prompt: "What should I pack for Acatenango overnight?" },
+  { label: "🌤️ Today", prompt: "What should I wear today based on my weather and trip day?" },
+  { label: "📋 Bookings", prompt: "Summarize what I still need to book based on my saved reservations." },
 ];
 
 /** Offline fallback when API unavailable */
@@ -16,7 +16,7 @@ export function localFallback(userMessage: string): string {
 - *¿Cuánto cuesta?*
 - *La cuenta, por favor*
 
-Deploy with \`ANTHROPIC_API_KEY\` on Vercel for live web search.`;
+Go live on Scout once the app is deployed with API keys.`;
   }
 
   if (/deal|cheap|price|book/i.test(q)) {
@@ -26,8 +26,8 @@ Deploy with \`ANTHROPIC_API_KEY\` on Vercel for live web search.`;
 - Lake hotel: book La Casa del Mundo direct
 - Shuttles: GuateGo or hostel desks beat airport rates
 
-Use the **Deals** tab once live search is connected.`;
+Try **Price hunt** on Scout for live scans.`;
   }
 
-  return `Live search needs an API key on the server. Use **Explore** and **Today** offline, or add keys on Vercel.`;
+  return `Scout needs API keys on the server for live intel. **Today**, **Explore**, and **Plan** work offline.`;
 }

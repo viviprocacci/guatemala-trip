@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { Search, Sparkles } from "lucide-react";
+import { Radar, Sparkles, Target } from "lucide-react";
 import { useChatContext } from "../hooks/useChatContext";
 import { fetchDeals } from "../services/ai";
 import { localFallback } from "../services/chat";
 
 const DEAL_FOCUS = [
-  "Acatenango overnight tour",
-  "Antigua hotel night 1",
+  "Acatenango overnight",
+  "Antigua night 1 hotel",
   "La Casa del Mundo",
   "Shuttle Antigua → Lake",
   "Shuttle Lake → Airport",
-  "Post-hike spa massage",
+  "Post-hike spa",
 ];
 
 export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
@@ -21,7 +21,7 @@ export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
 
   const runDeals = async (focus?: string) => {
     if (!context.tripStartDate) {
-      setResult("Set your **trip start date** on the Today tab first — deals depend on your dates.");
+      setResult("Set your **trip start date** on Today first — price hunts need your dates.");
       return;
     }
     if (!aiEnabled) {
@@ -29,7 +29,7 @@ export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
       return;
     }
     if (!budget.canUse) {
-      setResult("~$5 search budget used on this device. The meter resets if you clear site data.");
+      setResult("Scout fuel's empty on this device. Clear site data to reset the meter.");
       return;
     }
 
@@ -46,7 +46,7 @@ export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
       setSearchedWeb(Boolean(res.searchedWeb));
       setResult(res.text);
     } catch (e) {
-      setResult(`Error: ${e instanceof Error ? e.message : "Failed"}`);
+      setResult(`Hunt failed — ${e instanceof Error ? e.message : "try again"}.`);
     } finally {
       setLoading(false);
     }
@@ -55,27 +55,35 @@ export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
   return (
     <div className="deals-panel">
       <p className="deals-intro">
-        Web deal scanner for your dates — pulls live prices and where to book.
-        {!aiEnabled && " Deploy to Vercel with API keys to enable."}
+        Live price hunt for your exact dates — operators, hotels, shuttles, and where to book.
       </p>
 
       {!context.tripStartDate && (
         <div className="nudge-card nudge-card--urgent">
-          Set trip start date on <strong>Today</strong> before scanning deals.
+          Set trip start on <strong>Today</strong> to unlock price hunts.
         </div>
       )}
 
       <button
         type="button"
-        className="btn-primary deals-scan-all"
+        className="btn-scan deals-scan-all"
         onClick={() => runDeals()}
         disabled={loading || !context.tripStartDate}
       >
-        <Sparkles size={16} />
-        {loading ? "Scanning…" : "Scan all trip bookings"}
+        {loading ? (
+          <>
+            <Radar size={16} className="spin" />
+            Hunting prices…
+          </>
+        ) : (
+          <>
+            <Sparkles size={16} />
+            Hunt all trip bookings
+          </>
+        )}
       </button>
 
-      <p className="deals-focus-label">Or focus on one:</p>
+      <p className="deals-focus-label">Or zero in on one:</p>
       <div className="quick-prompts">
         {DEAL_FOCUS.map((f) => (
           <button
@@ -85,14 +93,16 @@ export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
             onClick={() => runDeals(f)}
             disabled={loading}
           >
-            <Search size={12} />
+            <Target size={12} />
             {f}
           </button>
         ))}
       </div>
 
       {searchedWeb && (
-        <p className="deals-web-badge">Live web results included</p>
+        <span className="intel-badge">
+          <Radar size={10} /> Live intel
+        </span>
       )}
 
       {result && (

@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import {
   Calendar,
   Compass,
   Languages,
   MapPin,
-  MessageCircle,
+  Radar,
   Sparkles,
   Wallet,
 } from "lucide-react";
@@ -13,10 +13,14 @@ import { TodayView } from "./components/TodayView";
 import { ExploreView } from "./components/ExploreView";
 import { ItineraryView } from "./components/ItineraryView";
 import { PhrasesView } from "./components/PhrasesView";
-import { TripMap } from "./components/TripMap";
 import { WalletView } from "./components/WalletView";
-import { AiView } from "./components/AiView";
 
+const TripMap = lazy(() =>
+  import("./components/TripMap").then((m) => ({ default: m.TripMap })),
+);
+const AiView = lazy(() =>
+  import("./components/AiView").then((m) => ({ default: m.AiView })),
+);
 const TABS: { id: TabId; label: string; icon: typeof Sparkles }[] = [
   { id: "today", label: "Today", icon: Sparkles },
   { id: "explore", label: "Explore", icon: Compass },
@@ -24,7 +28,7 @@ const TABS: { id: TabId; label: string; icon: typeof Sparkles }[] = [
   { id: "phrases", label: "Español", icon: Languages },
   { id: "map", label: "Map", icon: MapPin },
   { id: "wallet", label: "Wallet", icon: Wallet },
-  { id: "chat", label: "Finder", icon: MessageCircle },
+  { id: "chat", label: "Scout", icon: Radar },
 ];
 
 export default function App() {
@@ -37,7 +41,7 @@ export default function App() {
     phrases: "Español",
     map: "Map",
     wallet: "Wallet",
-    chat: "Finder",
+    chat: "Scout",
   };
 
   return (
@@ -50,15 +54,16 @@ export default function App() {
       </header>
 
       <main className="main-content">
-        {tab === "today" && <TodayView />}
-        {tab === "explore" && <ExploreView />}
-        {tab === "itinerary" && <ItineraryView />}
-        {tab === "phrases" && <PhrasesView />}
-        {tab === "map" && <TripMap />}
-        {tab === "wallet" && <WalletView />}
-        {tab === "chat" && <AiView />}
+        <Suspense fallback={<p className="tab-loading">Loading…</p>}>
+          {tab === "today" && <TodayView />}
+          {tab === "explore" && <ExploreView />}
+          {tab === "itinerary" && <ItineraryView />}
+          {tab === "phrases" && <PhrasesView />}
+          {tab === "map" && <TripMap />}
+          {tab === "wallet" && <WalletView />}
+          {tab === "chat" && <AiView />}
+        </Suspense>
       </main>
-
       <nav className="nav" aria-label="Main">
         <div className="nav-inner nav-inner--scroll">
           {TABS.map(({ id, label, icon: Icon }) => (
