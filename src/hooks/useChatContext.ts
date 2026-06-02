@@ -2,18 +2,18 @@ import { useEffect, useState } from "react";
 import type { ChatContext } from "../../lib/ai/types";
 import { fetchWeather, weatherLabel, WEATHER_SPOTS, weatherSpotsForDay } from "../services/weather";
 import { tripDayLabel } from "../utils/tripDay";
-import { useAiBudget } from "./useAiBudget";
+import { useBudget } from "../contexts/BudgetContext";
 import { useReservations } from "./useReservations";
 import { useTripStart } from "./useTripStart";
 
 export function useChatContext(): {
   context: ChatContext;
   ready: boolean;
-  budget: ReturnType<typeof useAiBudget>;
+  budget: ReturnType<typeof useBudget>;
 } {
   const { startDate, tripDay, loaded: tripLoaded } = useTripStart();
   const { reservations, loaded: resLoaded } = useReservations();
-  const budget = useAiBudget();
+  const budget = useBudget();
   const [weather, setWeather] = useState<ChatContext["weather"]>([]);
 
   useEffect(() => {

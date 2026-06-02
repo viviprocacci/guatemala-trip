@@ -74,7 +74,12 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
         .map((m) => ({ role: m.role, content: m.content }));
 
       const result = await sendChatMessage(apiHistory, context);
-      if (result.usage) budget.recordUsage(result.usage, result.costUsd);
+      if (result.costUsd != null || result.usage) {
+        budget.recordUsage(
+          result.usage ?? { input_tokens: 0, output_tokens: 0 },
+          result.costUsd,
+        );
+      }
 
       setMessages((prev) => [
         ...prev,

@@ -149,7 +149,12 @@ export function ExploreView() {
         context,
         local.map((e) => `${e.name} (${e.priceLabel})`),
       );
-      if (res.usage) budget.recordUsage(res.usage, res.costUsd);
+      if (res.costUsd != null || res.usage) {
+        budget.recordUsage(
+          res.usage ?? { input_tokens: 0, output_tokens: 0 },
+          res.costUsd,
+        );
+      }
       setSearchedWeb(Boolean(res.searchedWeb));
       const structured = res.structured ?? parseExploreResult(res.text);
       if (structured?.items.length) {

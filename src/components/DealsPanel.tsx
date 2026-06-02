@@ -37,7 +37,12 @@ export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
     setResult(null);
     try {
       const res = await fetchDeals(context, focus);
-      if (res.usage) budget.recordUsage(res.usage, res.costUsd);
+      if (res.costUsd != null || res.usage) {
+        budget.recordUsage(
+          res.usage ?? { input_tokens: 0, output_tokens: 0 },
+          res.costUsd,
+        );
+      }
       setSearchedWeb(Boolean(res.searchedWeb));
       setResult(res.text);
     } catch (e) {

@@ -100,6 +100,8 @@ export function PhrasesView() {
         setTranslateSource(result.source);
         if (result.usage && result.costUsd) {
           budget.recordUsage(result.usage, result.costUsd);
+        } else if (result.costUsd != null) {
+          budget.recordUsage({ input_tokens: 0, output_tokens: 0 }, result.costUsd);
         }
       } catch (e) {
         setOutput("");

@@ -19,6 +19,7 @@ export function AiView() {
         remainingUsd={budget.remainingUsd}
         percentUsed={budget.percentUsed}
         webSearch={webSearch}
+        onReset={budget.reset}
       />
 
       {!enabled && (
