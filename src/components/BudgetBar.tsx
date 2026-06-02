@@ -22,7 +22,7 @@ export function BudgetBar({
       <div className="fuel-gauge-top">
         <span className="fuel-gauge-label">
           <Zap size={11} />
-          Pedro fuel
+          Pedro
         </span>
         <span className="fuel-gauge-amount">
           ${formatBudgetUsd(remainingUsd)} left
@@ -35,6 +35,8 @@ export function BudgetBar({
         <p className="fuel-gauge-hint">
           ${formatBudgetUsd(spentUsd)} used · ${BUDGET_CAP_USD} cap per device
           {webSearch ? " · live web scan on" : ""}
+          {" · "}
+          <span className="pedro-engine pedro-engine--inline">powered by claude</span>
         </p>
       )}
     </div>

@@ -1,10 +1,11 @@
-import { Car, Cloud, MapPin, Navigation } from "lucide-react";
+import { Car, Cloud, MapPin, MessageCircle, Navigation } from "lucide-react";
 import type { GeoPlace } from "../utils/links";
 import {
   appleMapsUrl,
   googleMapsDirectionsUrl,
   inDriveUrl,
   openExternal,
+  openRideLink,
   uberUrl,
   weatherUrl,
 } from "../utils/links";
@@ -12,9 +13,10 @@ import {
 interface PlaceActionsProps {
   place: GeoPlace;
   compact?: boolean;
+  onAskPedro?: () => void;
 }
 
-export function PlaceActions({ place, compact }: PlaceActionsProps) {
+export function PlaceActions({ place, compact, onAskPedro }: PlaceActionsProps) {
   const mapActions = [
     { label: "Weather", icon: Cloud, url: weatherUrl(place), external: true },
     { label: "Maps", icon: MapPin, url: appleMapsUrl(place), external: true },
@@ -34,14 +36,28 @@ export function PlaceActions({ place, compact }: PlaceActionsProps) {
           {label}
         </button>
       ))}
-      <a href={uberUrl(place)} className="action-link action-link--ride">
+      <button
+        type="button"
+        className="action-link action-link--ride"
+        onClick={() => openRideLink(uberUrl(place))}
+      >
         <Car size={14} strokeWidth={1.5} />
         Uber
-      </a>
-      <a href={inDriveUrl(place)} className="action-link action-link--ride">
+      </button>
+      <button
+        type="button"
+        className="action-link action-link--ride"
+        onClick={() => openRideLink(inDriveUrl(place))}
+      >
         <Car size={14} strokeWidth={1.5} />
         InDrive
-      </a>
+      </button>
+      {onAskPedro && (
+        <button type="button" className="action-link action-link--pedro" onClick={onAskPedro}>
+          <MessageCircle size={14} strokeWidth={1.5} />
+          Ask Pedro
+        </button>
+      )}
     </div>
   );
 }

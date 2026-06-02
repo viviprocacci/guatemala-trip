@@ -133,11 +133,11 @@ export function ExploreView() {
     setAiMessage(null);
 
     if (!aiEnabled) {
-      setAiMessage("Curated picks below. Go live with Pedro for real-time prices.");
+      setAiMessage("Curated picks below. Ask Pedro when you're ready for live scan.");
       return;
     }
     if (!budget.canUse) {
-      setAiMessage("Pedro's out of fuel. Clear site data to reset the meter.");
+      setAiMessage("Pedro's taking a breather. Clear site data to reset the meter.");
       return;
     }
 

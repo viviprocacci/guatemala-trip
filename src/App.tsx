@@ -9,6 +9,7 @@ import {
   Wallet,
 } from "lucide-react";
 import type { TabId } from "./types";
+import { NavigationProvider } from "./contexts/NavigationContext";
 import { TodayView } from "./components/TodayView";
 import { ExploreView } from "./components/ExploreView";
 import { ItineraryView } from "./components/ItineraryView";
@@ -31,7 +32,7 @@ const TABS: { id: TabId; label: string; icon: typeof Sparkles }[] = [
   { id: "chat", label: "Pedro", icon: Radar },
 ];
 
-export default function App() {
+function AppShell() {
   const [tab, setTab] = useState<TabId>("today");
 
   const titles: Record<TabId, string> = {
@@ -45,41 +46,47 @@ export default function App() {
   };
 
   return (
-    <div className="app">
-      <header className="app-bar">
-        <div>
-          <span className="app-bar-eyebrow">Guatemala</span>
-          <h1 className="app-bar-title">{titles[tab]}</h1>
-        </div>
-      </header>
+    <NavigationProvider setActiveTab={setTab}>
+      <div className="app">
+        <header className="app-bar">
+          <div>
+            <span className="app-bar-eyebrow">Guatemala</span>
+            <h1 className="app-bar-title">{titles[tab]}</h1>
+          </div>
+        </header>
 
-      <main className="main-content">
-        <Suspense fallback={<p className="tab-loading">Loading…</p>}>
-          {tab === "today" && <TodayView />}
-          {tab === "explore" && <ExploreView />}
-          {tab === "itinerary" && <ItineraryView />}
-          {tab === "phrases" && <PhrasesView />}
-          {tab === "map" && <TripMap />}
-          {tab === "wallet" && <WalletView />}
-          {tab === "chat" && <AiView />}
-        </Suspense>
-      </main>
-      <nav className="nav" aria-label="Main">
-        <div className="nav-inner nav-inner--scroll">
-          {TABS.map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              type="button"
-              className={`nav-btn ${tab === id ? "active" : ""}`}
-              onClick={() => setTab(id)}
-              aria-current={tab === id ? "page" : undefined}
-            >
-              <Icon size={18} strokeWidth={1.5} />
-              <span>{label}</span>
-            </button>
-          ))}
-        </div>
-      </nav>
-    </div>
+        <main className="main-content">
+          <Suspense fallback={<p className="tab-loading">Loading…</p>}>
+            {tab === "today" && <TodayView />}
+            {tab === "explore" && <ExploreView />}
+            {tab === "itinerary" && <ItineraryView />}
+            {tab === "phrases" && <PhrasesView />}
+            {tab === "map" && <TripMap />}
+            {tab === "wallet" && <WalletView />}
+            {tab === "chat" && <AiView />}
+          </Suspense>
+        </main>
+        <nav className="nav" aria-label="Main">
+          <div className="nav-inner nav-inner--scroll">
+            {TABS.map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                type="button"
+                className={`nav-btn ${tab === id ? "active" : ""}`}
+                onClick={() => setTab(id)}
+                aria-current={tab === id ? "page" : undefined}
+              >
+                <Icon size={18} strokeWidth={1.5} />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+        </nav>
+      </div>
+    </NavigationProvider>
   );
+}
+
+export default function App() {
+  return <AppShell />;
 }

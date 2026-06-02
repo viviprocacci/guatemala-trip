@@ -60,3 +60,14 @@ export interface Phrase {
 }
 
 export type PhraseCategory = "lancha" | "taxi" | "restaurant" | "altitude" | "general";
+
+export interface SavedMapPin {
+  id: string;
+  name: string;
+  lat: number;
+  lng: number;
+  notes?: string;
+  address?: string;
+  sourceUrl?: string;
+  addedAt: string;
+}

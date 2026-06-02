@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { Send } from "lucide-react";
 import type { ChatMessage } from "../types";
 import { useChatContext } from "../hooks/useChatContext";
+import { useNavigation } from "../contexts/NavigationContext";
 import { sendChatMessage } from "../services/ai";
 import { localFallback, QUICK_PROMPTS } from "../services/chat";
 
@@ -9,12 +10,14 @@ const TRANSLATE_PATTERN = /translate|how do i say|cómo se dice|in spanish|what'
 
 export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
   const { context, budget } = useChatContext();
+  const { consumePedroSeed } = useNavigation();
+  const seededRef = useRef(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: "welcome",
       role: "assistant",
       content:
-        "¡Bienvenidos! I'm Pedro, here to help you make the most of your Guatemala trip. Ask me for advice, ideas, timing, whatever you need. (For Spanish, the Español tab has you covered.)",
+        "¡Bienvenidos! I'm Pedro, your Guatemala travel companion. Ask me for advice, ideas, timing, whatever you need. (For Spanish, the Español tab has you covered.)",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -55,7 +58,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
           id: crypto.randomUUID(),
           role: "assistant",
           content:
-            "Pedro's out of fuel on this device (~$5 cap). Clear site data to reset.",
+            "Pedro's taking a breather on this device (~$5 cap). Clear site data to reset.",
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -125,6 +128,16 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
       scrollToBottom();
     }
   };
+
+  useEffect(() => {
+    if (seededRef.current) return;
+    const seed = consumePedroSeed();
+    if (seed) {
+      seededRef.current = true;
+      void submit(seed);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- run once on mount for map → Pedro handoff
+  }, []);
 
   return (
     <div className="chat-panel">

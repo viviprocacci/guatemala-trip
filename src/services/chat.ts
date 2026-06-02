@@ -45,5 +45,5 @@ export function localFallback(userMessage: string): string {
 - Uber/InDrive in Antigua; negotiate tuk-tuks`;
   }
 
-  return `Pedro needs API keys for live chat. **Today**, **Explore**, **Plan**, and **Español** work offline. ¡Pregúntame lo que quieras!`;
+  return `Pedro works offline here. Connect API keys for live chat. **Today**, **Explore**, **Plan**, and **Español** still work without keys. ¡Pregúntame lo que quieras!`;
 }

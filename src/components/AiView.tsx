@@ -1,7 +1,7 @@
-import { Radar } from "lucide-react";
 import { useAiEnabled } from "../hooks/useAiEnabled";
 import { ChatPanel } from "./ChatPanel";
 import { BudgetBar } from "./BudgetBar";
+import { PedroEngineCredit } from "./PedroEngineCredit";
 import { useChatContext } from "../hooks/useChatContext";
 
 export function AiView() {
@@ -13,14 +13,14 @@ export function AiView() {
       <header className="wow-hero scout-hero">
         <div className="wow-hero-top">
           <div>
-            <span className="wow-hero-eyebrow">Trip intel</span>
             <h2 className="wow-hero-title">Pedro</h2>
-            <p className="wow-hero-sub">
-              ¡Bienvenidos! I'm Pedro, here to help you make the most of your trip. Ask me anything about Guatemala.
-            </p>
+            <p className="wow-hero-tagline">Your travel companion</p>
           </div>
-          <Radar size={28} strokeWidth={1.25} className="wow-hero-icon" aria-hidden />
+          <PedroEngineCredit className="pedro-engine--side" />
         </div>
+        <p className="wow-hero-sub">
+          ¡Bienvenidos! I'm here to help you make the most of your trip. Ask me anything about Guatemala.
+        </p>
         <BudgetBar
           spentUsd={budget.spentUsd}
           remainingUsd={budget.remainingUsd}
@@ -32,7 +32,7 @@ export function AiView() {
 
       {!enabled && (
         <div className="scout-offline-banner">
-          Offline tips only. Add API keys on the server for live answers.
+          Pedro works offline with saved tips. Add keys on the server for live chat.
         </div>
       )}
 
