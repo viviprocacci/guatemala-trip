@@ -35,7 +35,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: "You've hit the ~$5 AI budget on this device. Reset in settings or raise the cap in Anthropic console.",
+          content: "You've hit the ~$5 search budget on this device. Reset in settings or raise the cap in Anthropic console.",
           timestamp: new Date().toISOString(),
         },
       ]);

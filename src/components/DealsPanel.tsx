@@ -29,7 +29,7 @@ export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
       return;
     }
     if (!budget.canUse) {
-      setResult("~$5 AI budget used on this device. The meter resets if you clear site data.");
+      setResult("~$5 search budget used on this device. The meter resets if you clear site data.");
       return;
     }
 
@@ -50,7 +50,7 @@ export function DealsPanel({ aiEnabled }: { aiEnabled: boolean }) {
   return (
     <div className="deals-panel">
       <p className="deals-intro">
-        AI deal hunter for your dates — compares where to book and target prices.
+        Web deal scanner for your dates — pulls live prices and where to book.
         {!aiEnabled && " Deploy to Vercel with API keys to enable."}
       </p>
 

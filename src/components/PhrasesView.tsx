@@ -299,7 +299,7 @@ export function PhrasesView() {
                 disabled={!budget.canUse}
               />
               <Sparkles size={14} />
-              Natural Guatemalan Spanish (AI)
+              Natural Guatemalan Spanish (enhanced)
               {!budget.canUse && " — budget used"}
             </label>
           )}
@@ -316,7 +316,7 @@ export function PhrasesView() {
               )}
               {!translating && translateSource && (
                 <span className="translator-status">
-                  {translateSource === "ai" ? "AI · natural" : "Instant"}
+                  {translateSource === "ai" ? "Web · enhanced" : "Instant"}
                 </span>
               )}
             </div>

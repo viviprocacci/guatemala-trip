@@ -23,7 +23,7 @@ export function AiView() {
 
       {!enabled && (
         <div className="nudge-card">
-          AI runs on the server after Vercel deploy. Add <code>ANTHROPIC_API_KEY</code> in Vercel env
+          Live search runs on the server after Vercel deploy. Add <code>ANTHROPIC_API_KEY</code> in Vercel env
           vars — never share the key in the app URL.
         </div>
       )}

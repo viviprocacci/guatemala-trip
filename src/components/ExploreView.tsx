@@ -132,11 +132,11 @@ export function ExploreView() {
     setAiMessage(null);
 
     if (!aiEnabled) {
-      setAiMessage("Curated matches below. AI search needs ANTHROPIC_API_KEY on the server.");
+      setAiMessage("Curated matches below. Live web search needs API keys on the server.");
       return;
     }
     if (!budget.canUse) {
-      setAiMessage("~$5 AI budget used on this device.");
+      setAiMessage("~$5 search budget used on this device.");
       return;
     }
 
@@ -183,7 +183,7 @@ export function ExploreView() {
         <div className="explore-hero-text">
           <h2 className="explore-hero-title">Explore</h2>
           <p className="explore-hero-sub">
-            {EXCURSIONS.length} curated picks · AI deal search
+            {EXCURSIONS.length} curated picks · live web search
           </p>
         </div>
 
@@ -215,7 +215,7 @@ export function ExploreView() {
         <section className="explore-panel explore-panel--search">
           <div className="explore-panel-head">
             <div>
-              <span className="explore-panel-eyebrow">AI search</span>
+              <span className="explore-panel-eyebrow">Web search</span>
               <h3 className="explore-panel-title">"{activeSearch}"</h3>
             </div>
             <button type="button" className="explore-clear-btn" onClick={clearSearch}>
@@ -240,7 +240,7 @@ export function ExploreView() {
           </div>
 
           {searchLoading && (
-            <p className="explore-ai-loading">Searching web + comparing prices…</p>
+            <p className="explore-ai-loading">Scanning the web for prices…</p>
           )}
 
           {aiStructured && (

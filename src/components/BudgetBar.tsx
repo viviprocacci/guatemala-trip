@@ -11,7 +11,7 @@ export function BudgetBar({ spentUsd, remainingUsd, percentUsed, webSearch }: Bu
   return (
     <div className="budget-bar">
       <div className="budget-bar-top">
-        <span className="budget-label">AI budget</span>
+        <span className="budget-label">Search budget</span>
         <span className="budget-amount">
           ${remainingUsd.toFixed(2)} left of ${BUDGET_CAP_USD}
         </span>
@@ -24,7 +24,7 @@ export function BudgetBar({ spentUsd, remainingUsd, percentUsed, webSearch }: Bu
       </div>
       <p className="budget-hint">
         ~${spentUsd.toFixed(2)} used this device
-        {webSearch ? " · live web search on" : " · add TAVILY_API_KEY for live deal search"}
+        {webSearch ? " · live web scan on" : " · add TAVILY_API_KEY for live web scan"}
       </p>
     </div>
   );

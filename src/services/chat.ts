@@ -16,7 +16,7 @@ export function localFallback(userMessage: string): string {
 - *¿Cuánto cuesta?*
 - *La cuenta, por favor*
 
-Deploy with \`ANTHROPIC_API_KEY\` on Vercel for live AI.`;
+Deploy with \`ANTHROPIC_API_KEY\` on Vercel for live web search.`;
   }
 
   if (/deal|cheap|price|book/i.test(q)) {
@@ -26,8 +26,8 @@ Deploy with \`ANTHROPIC_API_KEY\` on Vercel for live AI.`;
 - Lake hotel: book La Casa del Mundo direct
 - Shuttles: GuateGo or hostel desks beat airport rates
 
-Use the **Deals** tab once AI is connected.`;
+Use the **Deals** tab once live search is connected.`;
   }
 
-  return `AI needs to be deployed with an API key. Use **Explore** and **Today** offline, or connect Claude on Vercel.`;
+  return `Live search needs an API key on the server. Use **Explore** and **Today** offline, or add keys on Vercel.`;
 }
