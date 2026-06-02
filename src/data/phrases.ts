@@ -31,7 +31,7 @@ export const PHRASES: Phrase[] = [
   { id: "g1", category: "general", spanish: "¿Cuánto cuesta?", english: "How much does it cost?" },
   { id: "g2", category: "general", spanish: "¿Dónde está el baño?", english: "Where is the bathroom?" },
   { id: "g3", category: "general", spanish: "Gracias, muy amable", english: "Thank you, very kind" },
-  { id: "g4", category: "general", spanish: "No entiendo — ¿puede repetir?", english: "I don't understand — can you repeat?" },
+  { id: "g4", category: "general", spanish: "No entiendo. ¿Puede repetir?", english: "I don't understand. Can you repeat?" },
   { id: "g5", category: "general", spanish: "¿Aceptan tarjeta?", english: "Do you accept card?" },
-  { id: "g6", category: "general", spanish: "Solo efectivo — ¿dónde hay un cajero?", english: "Cash only — where is an ATM?" },
+  { id: "g6", category: "general", spanish: "Solo efectivo. ¿Dónde hay un cajero?", english: "Cash only. Where is an ATM?" },
 ];

@@ -23,7 +23,7 @@ export function exportItineraryPdf() {
         ${day.activities
           .map(
             (a) =>
-              `<li>${a.time ? `<strong>${escapeHtml(a.time)}</strong> — ` : ""}${escapeHtml(a.text)}</li>`,
+              `<li>${a.time ? `<strong>${escapeHtml(a.time)}</strong>: ` : ""}${escapeHtml(a.text)}</li>`,
           )
           .join("")}
       </ul>
@@ -36,7 +36,7 @@ export function exportItineraryPdf() {
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Guatemala — 5 Day Itinerary</title>
+  <title>Guatemala · 5 Day Itinerary</title>
   <style>
     @page { margin: 1.2cm; }
     * { box-sizing: border-box; }

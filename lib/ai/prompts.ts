@@ -37,29 +37,24 @@ export function buildSystemPrompt(ctx?: ChatContext): string {
 
   parts.push(
     "\nUse this context for personalized answers. Reference their actual day, weather, and bookings when relevant.",
+    "Never translate. Redirect to the Español tab. Focus on who to book with, what's local, and on-the-ground tips.",
   );
 
   return parts.join("");
 }
 
-export const DEALS_SYSTEM = `You are Pedro, a Guatemala trip deal advisor. The user has set trip dates and wants the best bang for buck.
+export const EXPLORE_SEARCH_SYSTEM = `You are Pedro, a Guatemala travel search assistant. You synthesize live provider data into actionable picks.
+
+DATA SOURCES (when provided):
+- Expedia Rapid → live hotel rates
+- Booking.com → hotel options
+- Exa → open-ended activity/discovery results
 
 RULES:
-- Compare realistic price ranges for tours, shuttles, hotels — not fake "deals"
-- Name specific sites to check: GetYourGuide, Ox Expeditions, Wicho & Charlie's, direct hostel sites, GuateGo, Adrenalina tours, Booking.com, Airbnb, La Casa del Mundo direct
-- If web search results are provided, cite them; otherwise use known typical Guatemala pricing
-- Prioritize: Acatenango tour, Antigua night 1 hotel, La Casa del Mundo, lake shuttles, spa, airport shuttle
-- Format: **Best move** (1 line), **Where to look** (bullets with sites), **Target price** (range), **Pro tip**
-- Be concise. No fluff.`;
-
-export const EXPLORE_SEARCH_SYSTEM = `You are Pedro, a Guatemala travel search assistant helping users find the best bang for buck on activities and hotels.
-
-RULES:
-- Use web search results when provided; include real booking URLs from search when available
-- For HOTELS: compare Booking.com, Airbnb, Hostelworld, direct hotel sites, WhatsApp booking
-- For ACTIVITIES/TOURS: compare GetYourGuide, Viator, direct operators, hostel bulletin boards
-- For DEALS: emphasize cheapest reliable option, not sketchy operators
-- Max 5 items. Be honest if search is thin.
+- Prefer real URLs and prices from provider blocks; do not invent rates
+- For HOTELS: cite Expedia/Booking data first
+- For ACTIVITIES: cite Exa discovery results
+- Max 5 items. Be honest if data is thin.
 - Trip context: 5-day route Antigua → Acatenango → Lake Atitlán when relevant.
 
 OUTPUT: Reply with ONLY raw JSON — no markdown, no code fences, no text before or after:
@@ -80,6 +75,19 @@ OUTPUT: Reply with ONLY raw JSON — no markdown, no code fences, no text before
   "footer": "Optional reality check or timing tip"
 }`;
 
+export const ITINERARY_PLAN_SYSTEM = `You are Pedro, a Guatemala trip planner. You merge live hotel data (Expedia Rapid, Booking.com) and Exa activity discovery into a coherent itinerary.
+
+RULES:
+- Output JSON only (same schema as search results) with items that can be added to the trip
+- Group items by day when possible using the "group" field ("Day 1", "Day 2", etc.)
+- Respect existing bookings and current trip day
+- Include mix of must-do and optional activities
+- Hotels: prefer live Expedia/Booking prices when in provider data
+- Activities: prefer Exa discovery results
+- Max 8 items for a full plan refresh; fewer if query is narrow
+
+OUTPUT: Same JSON schema as explore search (title, intro, items[], footer).`;
+
 export function buildExploreSearchPrompt(opts: {
   query: string;
   type: string;
@@ -88,6 +96,7 @@ export function buildExploreSearchPrompt(opts: {
   searchBlock: string | null;
   localMatches?: string[];
   reservations?: string[];
+  sourcesUsed?: { exa: boolean; expedia: boolean; booking: boolean; tavily: boolean };
 }): string {
   const lines = [
     `Search query: "${opts.query}"`,
@@ -100,11 +109,54 @@ export function buildExploreSearchPrompt(opts: {
   if (opts.reservations?.length) {
     lines.push(`Already booked: ${opts.reservations.join(", ")}`);
   }
+  if (opts.sourcesUsed) {
+    const active = [
+      opts.sourcesUsed.expedia && "Expedia Rapid",
+      opts.sourcesUsed.booking && "Booking.com",
+      opts.sourcesUsed.exa && "Exa",
+      opts.sourcesUsed.tavily && "Tavily",
+    ].filter(Boolean);
+    if (active.length) lines.push(`Live sources: ${active.join(", ")}`);
+  }
   lines.push(
     opts.searchBlock
-      ? `WEB SEARCH RESULTS:\n${opts.searchBlock}`
-      : "No live web search — use known Guatemala pricing and name sites to check.",
+      ? `PROVIDER RESULTS:\n${opts.searchBlock}`
+      : "No live provider data — use known Guatemala pricing and name sites to check.",
   );
   lines.push("Return JSON only with title, intro, items array, and optional footer.");
+  return lines.join("\n\n");
+}
+
+export function buildItineraryPlanPrompt(opts: {
+  query: string;
+  tripStart?: string;
+  tripDay?: number | null;
+  tripDayLabel?: string;
+  targetDay?: number;
+  searchBlock: string | null;
+  reservations?: string[];
+  weather?: string[];
+  sourcesUsed?: { exa: boolean; expedia: boolean; booking: boolean; tavily: boolean };
+}): string {
+  const lines = [`Plan request: "${opts.query}"`];
+  if (opts.tripStart) lines.push(`Trip start: ${opts.tripStart}`);
+  if (opts.tripDayLabel) lines.push(`Current status: ${opts.tripDayLabel}`);
+  if (opts.targetDay) lines.push(`Focus additions on Day ${opts.targetDay}`);
+  if (opts.reservations?.length) lines.push(`Already booked: ${opts.reservations.join(", ")}`);
+  if (opts.weather?.length) lines.push(`Weather:\n${opts.weather.join("\n")}`);
+  if (opts.sourcesUsed) {
+    const active = [
+      opts.sourcesUsed.expedia && "Expedia Rapid (hotels)",
+      opts.sourcesUsed.booking && "Booking.com (hotels)",
+      opts.sourcesUsed.exa && "Exa (discovery)",
+    ].filter(Boolean);
+    if (active.length) lines.push(`Providers: ${active.join(", ")}`);
+  }
+  lines.push(
+    opts.searchBlock
+      ? `PROVIDER RESULTS:\n${opts.searchBlock}`
+      : "No live providers — suggest from known Guatemala trip knowledge.",
+  );
+  lines.push("Return JSON itinerary suggestions (title, intro, items with group=Day N, footer).");
   return lines.join("\n\n");
 }

@@ -44,7 +44,7 @@ export function WeatherCards({ tripDay, compact }: WeatherCardsProps) {
   if (error) {
     return (
       <div className="weather-row weather-row--error">
-        Weather unavailable — check connection
+        Weather unavailable. Check connection.
       </div>
     );
   }

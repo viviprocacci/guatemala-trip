@@ -1,63 +1,54 @@
 import { parseExploreResult } from "./exploreResult";
-import { buildExploreSearchPrompt, EXPLORE_SEARCH_SYSTEM } from "./prompts";
+import { buildItineraryPlanPrompt, ITINERARY_PLAN_SYSTEM } from "./prompts";
 import { callClaude, getApiKey, getModel } from "./anthropic";
 import { gatherSearchSources } from "../providers/sources";
 import { estimateCostUsd } from "./types";
 import type { ChatContext } from "./types";
 
-export type SearchType = "activity" | "hotel" | "deal" | "general";
-
-export interface SearchRequest {
-  query: string;
-  type?: SearchType;
+export interface ItineraryPlanRequest {
+  query?: string;
   context?: ChatContext;
-  /** Curated picks that matched locally — Claude can reference these */
-  localMatches?: string[];
+  /** Merge suggestions into specific day 1–5 */
+  targetDay?: number;
 }
 
-function addDays(iso: string, days: number): string {
-  const d = new Date(iso + "T12:00:00");
-  d.setDate(d.getDate() + days);
-  return d.toISOString().slice(0, 10);
-}
-
-export async function runExploreSearch(
-  req: SearchRequest,
+export async function runItineraryPlan(
+  req: ItineraryPlanRequest,
   env: Record<string, string | undefined>,
 ) {
   const apiKey = getApiKey(env);
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY not configured on server");
 
-  const type = req.type ?? "general";
+  const query = req.query?.trim() || "Build my Guatemala trip plan";
   const start = req.context?.tripStartDate ?? "";
-  const end = start ? addDays(start, 4) : "";
 
   const sources = await gatherSearchSources(
     {
-      query: req.query,
-      type,
+      query,
+      type: "general",
       tripStart: start || undefined,
     },
     env,
   );
 
-  const userPrompt = buildExploreSearchPrompt({
-    query: req.query,
-    type,
+  const userPrompt = buildItineraryPlanPrompt({
+    query,
     tripStart: start || undefined,
-    tripEnd: end || undefined,
+    tripDay: req.context?.tripDay,
+    tripDayLabel: req.context?.tripDayLabel,
+    targetDay: req.targetDay,
     searchBlock: sources.text,
-    localMatches: req.localMatches,
     reservations: req.context?.reservations?.map((r) => r.title),
+    weather: req.context?.weather?.map((w) => `${w.label}: ${w.high}°F/${w.low}°F ${w.conditions}`),
     sourcesUsed: sources.sourcesUsed,
   });
 
   const result = await callClaude(
     apiKey,
     getModel(env),
-    EXPLORE_SEARCH_SYSTEM,
+    ITINERARY_PLAN_SYSTEM,
     [{ role: "user", content: userPrompt }],
-    1500,
+    2000,
   );
 
   const structured = parseExploreResult(result.text);
@@ -67,10 +58,7 @@ export async function runExploreSearch(
     structured,
     usage: result.usage,
     costUsd: estimateCostUsd(result.usage),
-    searchedWeb: sources.sourcesUsed.exa || sources.sourcesUsed.expedia || sources.sourcesUsed.booking || sources.sourcesUsed.tavily,
+    searchedWeb: sources.sourcesUsed.exa || sources.sourcesUsed.expedia || sources.sourcesUsed.booking,
     sourcesUsed: sources.sourcesUsed,
   };
 }
-
-export { runItineraryPlan } from "./itinerary";
-export type { ItineraryPlanRequest } from "./itinerary";

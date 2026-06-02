@@ -5,6 +5,8 @@ import { useChatContext } from "../hooks/useChatContext";
 import { sendChatMessage } from "../services/ai";
 import { localFallback, QUICK_PROMPTS } from "../services/chat";
 
+const TRANSLATE_PATTERN = /translate|how do i say|cómo se dice|in spanish|what's spanish for|say in spanish/i;
+
 export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
   const { context, budget } = useChatContext();
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -12,7 +14,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
       id: "welcome",
       role: "assistant",
       content:
-        "Hey — I'm Pedro. I know your day, weather, and what's booked. Ask me anything about the trip.",
+        "¡Bienvenidos! I'm Pedro, here to help you make the most of your Guatemala trip. Ask me for advice, ideas, timing, whatever you need. (For Spanish, the Español tab has you covered.)",
       timestamp: new Date().toISOString(),
     },
   ]);
@@ -30,6 +32,22 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
     const trimmed = text.trim();
     if (!trimmed || loading) return;
 
+    if (TRANSLATE_PATTERN.test(trimmed)) {
+      setMessages((prev) => [
+        ...prev,
+        { id: crypto.randomUUID(), role: "user", content: trimmed, timestamp: new Date().toISOString() },
+        {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: "That's what **Español** is for: phrase cards, instant translate, and speak-back. Ask me about the trip instead!",
+          timestamp: new Date().toISOString(),
+        },
+      ]);
+      setInput("");
+      scrollToBottom();
+      return;
+    }
+
     if (aiEnabled && !budget.canUse) {
       setMessages((prev) => [
         ...prev,
@@ -37,7 +55,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
           id: crypto.randomUUID(),
           role: "assistant",
           content:
-            "Pedro's out of fuel on this device (~$5 cap). Clear site data to reset, or raise your limit in the Anthropic console.",
+            "Pedro's out of fuel on this device (~$5 cap). Clear site data to reset.",
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -98,7 +116,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
         {
           id: crypto.randomUUID(),
           role: "assistant",
-          content: `Pedro hit a snag — ${e instanceof Error ? e.message : "try again in a moment"}.`,
+          content: `Pedro hit a snag. ${e instanceof Error ? e.message : "Try again."}`,
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -112,7 +130,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
     <div className="chat-panel">
       <div className="chat-body">
         {!context.tripStartDate && (
-          <p className="context-hint">Set your trip start on Today — Pedro gets sharper with dates.</p>
+          <p className="context-hint">Set your trip start on Today. I'll give better advice when I know your day.</p>
         )}
         <div className="quick-prompts">
           {QUICK_PROMPTS.map((q) => (
@@ -152,7 +170,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask Pedro anything…"
+            placeholder="Ask Pedro anything about your trip…"
             disabled={loading}
           />
           <button type="submit" className="btn-primary btn-send" disabled={loading || !input.trim()}>

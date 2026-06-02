@@ -15,9 +15,9 @@ const CATEGORIES: ReservationCategory[] = [
 
 const SUGGESTED = [
   { title: "Acatenango tour (Wicho & Charlie's / Ox / GYG)", category: "tour" as const },
-  { title: "Antigua hotel — Night 1", category: "hotel" as const },
+  { title: "Antigua hotel, Night 1", category: "hotel" as const },
   { title: "El Descanso Spa massage", category: "spa" as const },
-  { title: "La Casa del Mundo — 2 nights", category: "hotel" as const },
+  { title: "La Casa del Mundo, 2 nights", category: "hotel" as const },
   { title: "Shuttle Antigua → Lake Atitlán", category: "transport" as const },
   { title: "Shuttle Lake → GUA (Day 5)", category: "transport" as const },
   { title: "Flight home from GUA", category: "flight" as const },

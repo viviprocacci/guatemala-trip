@@ -7,13 +7,13 @@ export function getNudges(tripDay: number, hour: number): Nudge[] {
   if (tripDay === 0) {
     nudges.push({
       id: "pre-trip",
-      text: "Trip hasn't started yet — review your pack list and confirm Acatenango booking.",
+      text: "Trip hasn't started yet. Review your pack list and confirm Acatenango booking.",
     });
     return nudges;
   }
 
   if (tripDay > 5) {
-    nudges.push({ id: "post-trip", text: "Safe travels home — hope Guatemala was incredible." });
+    nudges.push({ id: "post-trip", text: "Safe travels home. Hope Guatemala was incredible." });
     return nudges;
   }
 
@@ -22,14 +22,14 @@ export function getNudges(tripDay: number, hour: number): Nudge[] {
       if (hour >= 18) {
         nudges.push({
           id: "d1-pack",
-          text: "Pack your Acatenango bag tonight — layers, 4L+ water, hand warmers, buff.",
+          text: "Pack your Acatenango bag tonight: layers, 4L+ water, hand warmers, buff.",
           urgency: "high",
         });
       }
       if (hour >= 20) {
         nudges.push({
           id: "d1-sleep",
-          text: "Sleep early — big hike tomorrow. Set alarm for shuttle.",
+          text: "Sleep early. Big hike tomorrow. Set alarm for shuttle.",
           urgency: "high",
         });
       }
@@ -37,7 +37,7 @@ export function getNudges(tripDay: number, hour: number): Nudge[] {
     case 2:
       nudges.push({
         id: "d2-water",
-        text: "Altitude day — sip water constantly. Buff over mouth for volcanic dust.",
+        text: "Altitude day. Sip water constantly. Buff over mouth for volcanic dust.",
         urgency: "high",
       });
       if (hour >= 16) {
@@ -52,7 +52,7 @@ export function getNudges(tripDay: number, hour: number): Nudge[] {
       if (hour < 10) {
         nudges.push({
           id: "d3-descend",
-          text: "Aim to be off the mountain by 10am — then massage & rehydrate in Antigua.",
+          text: "Aim to be off the mountain by 10am, then massage & rehydrate in Antigua.",
         });
       }
       if (hour >= 14) {
@@ -67,13 +67,13 @@ export function getNudges(tripDay: number, hour: number): Nudge[] {
       if (hour < 10) {
         nudges.push({
           id: "d4-morning",
-          text: "Kayak or fish early — lake gets windy by afternoon.",
+          text: "Kayak or fish early. Lake gets windy by afternoon.",
         });
       }
       if (hour >= 12 && hour < 16) {
         nudges.push({
           id: "d4-tzankujil",
-          text: "Cerro Tzankujil closes around 4pm — Q15 entry, cliff jump with volcano views.",
+          text: "Cerro Tzankujil closes around 4pm. Q15 entry, cliff jump with volcano views.",
         });
       }
       break;
@@ -81,13 +81,13 @@ export function getNudges(tripDay: number, hour: number): Nudge[] {
       if (hour < 12) {
         nudges.push({
           id: "d5-leave",
-          text: "Leave the lake by midday — 3+ hours to GUA for your evening flight.",
+          text: "Leave the lake by midday. 3+ hours to GUA for your evening flight.",
           urgency: "high",
         });
       }
       nudges.push({
         id: "d5-buffer",
-        text: "Bumpy roads — build in extra buffer to the airport.",
+        text: "Bumpy roads. Build in extra buffer to the airport.",
         urgency: hour >= 14 ? "high" : "normal",
       });
       break;

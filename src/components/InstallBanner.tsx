@@ -58,7 +58,7 @@ export function InstallBanner() {
           {isIOS() ? (
             <p>
               Tap <Share size={12} style={{ verticalAlign: "middle" }} /> Share, then{" "}
-              <strong>Add to Home Screen</strong>. Works offline after the first load — no
+              <strong>Add to Home Screen</strong>. Works offline after the first load. No
               computer needed.
             </p>
           ) : deferredPrompt ? (

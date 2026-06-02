@@ -1,15 +1,10 @@
-import { useState } from "react";
-import { MessageCircle, Radar, Tag } from "lucide-react";
+import { Radar } from "lucide-react";
 import { useAiEnabled } from "../hooks/useAiEnabled";
 import { ChatPanel } from "./ChatPanel";
-import { DealsPanel } from "./DealsPanel";
 import { BudgetBar } from "./BudgetBar";
 import { useChatContext } from "../hooks/useChatContext";
 
-type ScoutMode = "ask" | "hunt";
-
 export function AiView() {
-  const [mode, setMode] = useState<ScoutMode>("ask");
   const { enabled, webSearch } = useAiEnabled();
   const { budget } = useChatContext();
 
@@ -21,7 +16,7 @@ export function AiView() {
             <span className="wow-hero-eyebrow">Trip intel</span>
             <h2 className="wow-hero-title">Pedro</h2>
             <p className="wow-hero-sub">
-              Knows your day, weather & bookings — ask anything or hunt live prices.
+              ¡Bienvenidos! I'm Pedro, here to help you make the most of your trip. Ask me anything about Guatemala.
             </p>
           </div>
           <Radar size={28} strokeWidth={1.25} className="wow-hero-icon" aria-hidden />
@@ -37,34 +32,11 @@ export function AiView() {
 
       {!enabled && (
         <div className="scout-offline-banner">
-          Offline tips only — deploy with API keys for live intel.
+          Offline tips only. Add API keys on the server for live answers.
         </div>
       )}
 
-      <div className="scout-mode-tabs">
-        <button
-          type="button"
-          className={`scout-mode-tab ${mode === "ask" ? "active" : ""}`}
-          onClick={() => setMode("ask")}
-        >
-          <MessageCircle size={15} />
-          Ask Pedro
-        </button>
-        <button
-          type="button"
-          className={`scout-mode-tab ${mode === "hunt" ? "active" : ""}`}
-          onClick={() => setMode("hunt")}
-        >
-          <Tag size={15} />
-          Price hunt
-        </button>
-      </div>
-
-      {mode === "ask" ? (
-        <ChatPanel aiEnabled={enabled} />
-      ) : (
-        <DealsPanel aiEnabled={enabled} />
-      )}
+      <ChatPanel aiEnabled={enabled} />
     </div>
   );
 }

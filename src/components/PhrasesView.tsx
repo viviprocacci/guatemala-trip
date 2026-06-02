@@ -260,7 +260,7 @@ export function PhrasesView() {
       ) : (
         <div className="translator-panel">
           <p className="phrases-intro">
-            Type in English or Spanish — translation updates automatically
+            Type in English or Spanish. Translation updates automatically.
           </p>
 
           <div className="translator-direction">
@@ -302,7 +302,7 @@ export function PhrasesView() {
               />
               <Sparkles size={14} />
               Natural Guatemalan Spanish (enhanced)
-              {!budget.canUse && " — budget used"}
+              {!budget.canUse && " (budget used)"}
             </label>
           )}
 

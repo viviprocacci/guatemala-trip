@@ -20,6 +20,7 @@ import {
 import { useChatContext } from "../hooks/useChatContext";
 import { useAiEnabled } from "../hooks/useAiEnabled";
 import { exploreSearch } from "../services/ai";
+import type { AiResponse } from "../services/ai";
 import { parseExploreResult } from "../../lib/ai/exploreResult";
 import type { ExploreAiStructured } from "../../lib/ai/exploreResult";
 import type { SearchType } from "../../lib/ai/search";
@@ -35,14 +36,13 @@ const SEARCH_TYPES: { id: SearchType; label: string }[] = [
   { id: "general", label: "Everything" },
   { id: "activity", label: "Adventures" },
   { id: "hotel", label: "Stays" },
-  { id: "deal", label: "Steals" },
 ];
 
 const SEARCH_IDEAS = [
-  "Best Acatenango tour right now",
-  "Fly fishing on the lake",
+  "Acatenango overnight tour (Ox or Wicho)",
+  "Bass fishing on Lake Atitlán",
   "Antigua hostel under $25",
-  "Class III rafting near Antigua",
+  "Kayak Lake Atitlán early morning",
 ];
 
 const QUICK_FILTERS = [
@@ -93,10 +93,11 @@ export function ExploreView() {
   const [aiMessage, setAiMessage] = useState<string | null>(null);
   const [searchLoading, setSearchLoading] = useState(false);
   const [searchedWeb, setSearchedWeb] = useState(false);
+  const [sourcesUsed, setSourcesUsed] = useState<AiResponse["sourcesUsed"]>();
   const [activeSearch, setActiveSearch] = useState<string | null>(null);
 
   const { context, budget } = useChatContext();
-  const { enabled: aiEnabled } = useAiEnabled();
+  const { enabled: aiEnabled, exa: exaEnabled } = useAiEnabled();
 
   const isSearching = activeSearch !== null;
 
@@ -132,7 +133,7 @@ export function ExploreView() {
     setAiMessage(null);
 
     if (!aiEnabled) {
-      setAiMessage("Curated picks below — go live with Pedro for real-time prices.");
+      setAiMessage("Curated picks below. Go live with Pedro for real-time prices.");
       return;
     }
     if (!budget.canUse) {
@@ -156,14 +157,15 @@ export function ExploreView() {
         );
       }
       setSearchedWeb(Boolean(res.searchedWeb));
+      setSourcesUsed(res.sourcesUsed);
       const structured = res.structured ?? parseExploreResult(res.text);
       if (structured?.items.length) {
         setAiStructured(structured);
       } else {
-        setAiMessage("Couldn't read the intel — try scanning again.");
+        setAiMessage("Couldn't read the intel. Try scanning again.");
       }
     } catch (e) {
-      setAiMessage(`Scan failed — ${e instanceof Error ? e.message : "try again"}.`);
+      setAiMessage(`Scan failed. ${e instanceof Error ? e.message : "Try again."}`);
     } finally {
       setSearchLoading(false);
     }
@@ -175,6 +177,7 @@ export function ExploreView() {
     setAiStructured(null);
     setAiMessage(null);
     setSearchedWeb(false);
+    setSourcesUsed(undefined);
   };
 
   const toggleQuick = (id: QuickFilter) => {
@@ -190,7 +193,12 @@ export function ExploreView() {
             <span className="wow-hero-eyebrow">Discover</span>
             <h2 className="wow-hero-title">Explore</h2>
             <p className="wow-hero-sub">
-              {EXCURSIONS.length} hand-picked adventures · Pedro live scan
+              {EXCURSIONS.length} hand-picked adventures
+              {exaEnabled
+                ? " · Exa-powered live scan"
+                : aiEnabled
+                  ? " · Pedro live scan"
+                  : ""}
             </p>
           </div>
           <Compass size={28} strokeWidth={1.25} className="wow-hero-icon" aria-hidden />
@@ -207,7 +215,7 @@ export function ExploreView() {
           <input
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Scan tours, stays, steals…"
+            placeholder="Scan tours, stays, activities…"
             aria-label="Pedro search explore"
           />
           <button
@@ -218,6 +226,11 @@ export function ExploreView() {
             {searchLoading ? <Loader2 size={16} className="spin" /> : "Scan"}
           </button>
         </form>
+        {exaEnabled && (
+          <p className="explore-powered-by">
+            Live discovery search powered by <strong>Exa</strong>
+          </p>
+        )}
       </header>
 
       {isSearching ? (
@@ -251,7 +264,9 @@ export function ExploreView() {
           {searchLoading && (
             <div className="explore-scan-loading">
               <Radar size={14} className="spin" />
-              Scanning live prices across the web…
+              {exaEnabled
+                ? "Scanning with Exa across the web…"
+                : "Scanning live prices across the web…"}
             </div>
           )}
 
@@ -260,6 +275,7 @@ export function ExploreView() {
               data={aiStructured}
               query={activeSearch ?? ""}
               searchedWeb={searchedWeb}
+              sourcesUsed={sourcesUsed}
             />
           )}
 
@@ -378,22 +394,14 @@ export function ExploreView() {
             )}
 
             {filtered.length === 0 && (
-              <p className="explore-empty">No matches — try another filter.</p>
+              <p className="explore-empty">No matches. Try another filter.</p>
             )}
           </section>
         </>
       )}
 
       {selected && (
-        <ExploreModal
-          exc={selected}
-          onClose={() => setSelected(null)}
-          onFindDeals={(name) => {
-            setSelected(null);
-            runSearch(name, "deal");
-          }}
-          aiEnabled={aiEnabled}
-        />
+        <ExploreModal exc={selected} onClose={() => setSelected(null)} />
       )}
     </div>
   );
@@ -439,10 +447,12 @@ function ExploreAiResults({
   data,
   query,
   searchedWeb,
+  sourcesUsed,
 }: {
   data: ExploreAiStructured;
   query: string;
   searchedWeb: boolean;
+  sourcesUsed?: AiResponse["sourcesUsed"];
 }) {
   let lastGroup: string | undefined;
 
@@ -450,7 +460,14 @@ function ExploreAiResults({
     <div className="explore-ai-block">
       <div className="explore-ai-result-head">
         <strong>{data.title || `Results for "${query}"`}</strong>
-        {searchedWeb && <span className="intel-badge"><Radar size={10} /> Live intel</span>}
+        <div className="provider-badges">
+          {sourcesUsed?.expedia && <span className="intel-badge">Expedia</span>}
+          {sourcesUsed?.booking && <span className="intel-badge">Booking</span>}
+          {sourcesUsed?.exa && <span className="intel-badge"><Radar size={10} /> Exa</span>}
+          {searchedWeb && !sourcesUsed && (
+            <span className="intel-badge"><Radar size={10} /> Live intel</span>
+          )}
+        </div>
       </div>
 
       {data.intro && <p className="explore-ai-intro">{data.intro}</p>}
@@ -510,13 +527,9 @@ function ExploreAiResults({
 function ExploreModal({
   exc,
   onClose,
-  onFindDeals,
-  aiEnabled,
 }: {
   exc: Excursion;
   onClose: () => void;
-  onFindDeals: (name: string) => void;
-  aiEnabled: boolean;
 }) {
   return (
     <div className="explore-modal" role="dialog" aria-modal="true">
@@ -547,11 +560,6 @@ function ExploreModal({
           ))}
         </ul>
         <div className="explore-modal-actions">
-          {aiEnabled && (
-            <button type="button" className="btn-scan btn-scan--sm" onClick={() => onFindDeals(exc.name)}>
-              <Radar size={14} /> Hunt best price
-            </button>
-          )}
           {exc.lat != null && exc.lng != null && (
             <>
               <button

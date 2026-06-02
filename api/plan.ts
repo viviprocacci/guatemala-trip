@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { runTripDealScan } from "../lib/ai/search";
+import { runItineraryPlan } from "../lib/ai/itinerary";
 import type { ChatContext } from "../lib/ai/types";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -8,16 +8,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   }
 
   try {
-    const { context, focus } = req.body as {
+    const { query, context, targetDay } = req.body as {
+      query?: string;
       context?: ChatContext;
-      focus?: string;
+      targetDay?: number;
     };
 
-    const result = await runTripDealScan(context, focus, process.env);
+    const result = await runItineraryPlan({ query, context, targetDay }, process.env);
     return res.status(200).json(result);
   } catch (e) {
     return res.status(500).json({
-      error: e instanceof Error ? e.message : "Deals request failed",
+      error: e instanceof Error ? e.message : "Itinerary plan failed",
     });
   }
 }

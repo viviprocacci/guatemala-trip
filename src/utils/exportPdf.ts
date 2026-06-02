@@ -30,7 +30,7 @@ export function exportReservationsPdf(reservations: Reservation[]) {
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <title>Guatemala Trip — Reservations</title>
+  <title>Guatemala Trip · Reservations</title>
   <style>
     * { box-sizing: border-box; }
     body {

@@ -55,7 +55,7 @@ export const ACATENANGO_PACK = [
   "Layers, gloves, beanie, buff/neck gaiter",
   "Power bank, snacks, cash in Quetzales",
   "Altitude/motion sickness meds (Diamox/Dramamine)",
-  "Hand warmers — sleep with clothes on at camp",
+  "Hand warmers. Sleep with clothes on at camp",
   "At least 4L water, breaks on ascent",
 ];
 
@@ -66,7 +66,7 @@ export const PLACES: Place[] = [
     lat: 14.5833,
     lng: -90.5275,
     category: "airport",
-    notes: "Land early Day 1; fly home Day 5 — allow 3+ hrs to airport",
+    notes: "Land early Day 1; fly home Day 5. Allow 3+ hrs to airport",
   },
   {
     id: "antigua",
@@ -102,7 +102,7 @@ export const PLACES: Place[] = [
     lng: -90.731,
     category: "spa",
     day: 3,
-    notes: "5.0★ post-Acatenango massage — book ahead",
+    notes: "5.0★ post-Acatenango massage. Book ahead",
   },
   {
     id: "yspa",
@@ -187,15 +187,15 @@ export const PLACES: Place[] = [
 export const DAYS: DayPlan[] = [
   {
     day: 1,
-    title: "Antigua — Arrive & Acclimatize",
+    title: "Antigua · Arrive & Acclimatize",
     subtitle: "Land GUA early",
     stay: "Antigua base hotel or hostel",
     activities: [
       { time: "Morning", text: "Land GUA early, shuttle to Antigua (~45 min)", rideTo: { name: "Antigua", lat: 14.5586, lng: -90.7344, address: "Antigua Guatemala, Sacatepéquez, Guatemala" } },
       { text: "Check in, drop bags, get your bearings" },
-      { text: "Walk the city — ruins, coffee, market, good dinner" },
+      { text: "Walk the city: ruins, coffee, market, good dinner" },
       { text: "Free walking tours" },
-      { text: "Sleep early — big hike tomorrow" },
+      { text: "Sleep early. Big hike tomorrow" },
       { text: "Pack Acatenango bag tonight" },
     ],
     tips: [
@@ -204,15 +204,15 @@ export const DAYS: DayPlan[] = [
   },
   {
     day: 2,
-    title: "Acatenango — Ascent",
+    title: "Acatenango · Ascent",
     subtitle: "Overnight on the volcano",
     activities: [
       { time: "Early", text: "Shuttle to La Soledad base (~1.5 hrs)", rideTo: { name: "La Soledad trailhead", lat: 14.519, lng: -90.875, address: "La Soledad, Acatenango, Chimaltenango, Guatemala" } },
-      { text: "4–6 hr ascent to high camp (~3,900m) — steep, dusty, very windy" },
-      { text: "Volcanic dust is intense — bring buff/gaiter" },
-      { text: "Altitude is rough — 4L+ water, take breaks" },
+      { text: "4–6 hr ascent to high camp (~3,900m). Steep, dusty, very windy" },
+      { text: "Volcanic dust is intense. Bring buff/gaiter" },
+      { text: "Altitude is rough. 4L+ water, take breaks" },
       { time: "Evening", text: "Watch Volcán de Fuego erupt at sunset and through the night" },
-      { text: "Super cold at camp — all layers, sleep in clothes, hand warmers" },
+      { text: "Super cold at camp. All layers, sleep in clothes, hand warmers" },
     ],
     tips: [
       "Optional summit/Fuego hike next morning: ~7 km, ~4 hrs",
@@ -225,22 +225,22 @@ export const DAYS: DayPlan[] = [
     stay: "La Casa del Mundo (2 nights)",
     activities: [
       { time: "Dawn", text: "Optional sunrise summit push" },
-      { time: "Mid-morning", text: "Descend — aim off mountain by 10am" },
+      { time: "Mid-morning", text: "Descend. Aim off mountain by 10am" },
       { text: "Full body massage in Antigua (El Descanso or Y'SPA)" },
       { text: "Big meal, rehydrate, shower" },
       { time: "Afternoon", text: "Shuttle to Lake Atitlán (~2.5 hrs, bumpy)", rideTo: { name: "Panajachel / Lake Atitlán", lat: 14.741, lng: -91.158, address: "Panajachel, Sololá, Guatemala" } },
-      { text: "Lancha to Santa Cruz — check into La Casa del Mundo", rideTo: { name: "La Casa del Mundo", lat: 14.748, lng: -91.198, address: "Santa Cruz La Laguna, Sololá, Guatemala" } },
+      { text: "Lancha to Santa Cruz, check into La Casa del Mundo", rideTo: { name: "La Casa del Mundo", lat: 14.748, lng: -91.198, address: "Santa Cruz La Laguna, Sololá, Guatemala" } },
     ],
     tips: ["Last lanchas run around 6–7pm"],
   },
   {
     day: 4,
-    title: "Lake Atitlán — Full Lake Day",
+    title: "Lake Atitlán · Full Lake Day",
     activities: [
-      { time: "Morning", text: "Kayaking or bass fishing — go early (windy)" },
+      { time: "Morning", text: "Kayaking or guided bass fishing from the lake. Go early before wind." },
       { text: "Cliff jump at La Casa del Mundo (~40 ft)" },
-      { text: "Lancha to San Marcos or San Pedro — lunch & explore" },
-      { text: "Cerro Tzankujil — cliff jump with volcano backdrop (Q15, before 4pm)" },
+      { text: "Lancha to San Marcos or San Pedro, lunch & explore" },
+      { text: "Cerro Tzankujil: cliff jump with volcano backdrop (Q15, before 4pm)" },
       { time: "Evening", text: "Kayak or lancha back for sunset on the terrace" },
     ],
   },
@@ -250,7 +250,7 @@ export const DAYS: DayPlan[] = [
     activities: [
       { text: "Slow breakfast with volcano views" },
       { time: "Midday", text: "Shuttle back to Guatemala City", rideTo: { name: "GUA Airport", lat: 14.5833, lng: -90.5275, address: "Aeropuerto La Aurora, Guatemala City, Guatemala" } },
-      { text: "Evening flight from GUA — 3+ hr buffer for slow roads" },
+      { text: "Evening flight from GUA. 3+ hr buffer for slow roads" },
     ],
   },
 ];
@@ -259,7 +259,7 @@ export const EXTRA_IDEAS = [
   "Semuc Champey natural pools",
   "Chichicastenango market (Thu/Sun)",
   "Chocolate making class in Antigua",
-  "Café no sé — candlelit bar",
+  "Café no sé, candlelit bar",
   "Monterrico surf lessons",
   "Xela volcano town",
   "Vintage clothes shopping in Antigua",

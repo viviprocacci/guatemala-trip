@@ -1,6 +1,7 @@
 import type { Plugin, PreviewServer, ViteDevServer } from "vite";
 import { loadEnv } from "vite";
-import { runExploreSearch, runTripDealScan } from "./lib/ai/search";
+import { runExploreSearch } from "./lib/ai/search";
+import { runItineraryPlan } from "./lib/ai/itinerary";
 import { runTranslate } from "./lib/ai/translate";
 import type { ChatContext } from "./lib/ai/types";
 import { buildSystemPrompt } from "./lib/ai/prompts";
@@ -32,7 +33,14 @@ function attachApiRoutes(server: ViteDevServer | PreviewServer) {
     json(res, 200, {
       enabled: Boolean(getApiKey(env)),
       budgetCapUsd: 5,
-      webSearch: Boolean(env.TAVILY_API_KEY),
+      webSearch: Boolean(env.EXA_API_KEY || env.TAVILY_API_KEY),
+      providers: {
+        claude: Boolean(getApiKey(env)),
+        exa: Boolean(env.EXA_API_KEY),
+        expedia: Boolean(env.EXPEDIA_RAPID_API_KEY && env.EXPEDIA_RAPID_SECRET),
+        booking: Boolean(env.BOOKING_DEMAND_API_KEY || env.BOOKING_AFFILIATE_ID),
+        tavily: Boolean(env.TAVILY_API_KEY),
+      },
     });
   });
 
@@ -52,20 +60,6 @@ function attachApiRoutes(server: ViteDevServer | PreviewServer) {
     }
   });
 
-  server.middlewares.use("/api/deals", async (req, res) => {
-    if (req.method !== "POST") return json(res, 405, { error: "Method not allowed" });
-    try {
-      const { context, focus } = JSON.parse(await readBody(req)) as {
-        context?: ChatContext;
-        focus?: string;
-      };
-      const result = await runTripDealScan(context, focus, env);
-      json(res, 200, result);
-    } catch (e) {
-      json(res, 500, { error: e instanceof Error ? e.message : "Failed" });
-    }
-  });
-
   server.middlewares.use("/api/search", async (req, res) => {
     if (req.method !== "POST") return json(res, 405, { error: "Method not allowed" });
     try {
@@ -77,6 +71,21 @@ function attachApiRoutes(server: ViteDevServer | PreviewServer) {
       };
       if (!query?.trim()) return json(res, 400, { error: "query required" });
       const result = await runExploreSearch({ query, type, context, localMatches }, env);
+      json(res, 200, result);
+    } catch (e) {
+      json(res, 500, { error: e instanceof Error ? e.message : "Failed" });
+    }
+  });
+
+  server.middlewares.use("/api/plan", async (req, res) => {
+    if (req.method !== "POST") return json(res, 405, { error: "Method not allowed" });
+    try {
+      const { query, context, targetDay } = JSON.parse(await readBody(req)) as {
+        query?: string;
+        context?: ChatContext;
+        targetDay?: number;
+      };
+      const result = await runItineraryPlan({ query, context, targetDay }, env);
       json(res, 200, result);
     } catch (e) {
       json(res, 500, { error: e instanceof Error ? e.message : "Failed" });

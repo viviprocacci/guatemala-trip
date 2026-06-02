@@ -8,6 +8,12 @@ export interface AiResponse {
   usage?: import("../../lib/ai/types").TokenUsage;
   costUsd?: number;
   searchedWeb?: boolean;
+  sourcesUsed?: {
+    exa: boolean;
+    expedia: boolean;
+    booking: boolean;
+    tavily: boolean;
+  };
 }
 
 async function post<T>(path: string, body: unknown): Promise<T> {
@@ -25,6 +31,13 @@ export async function checkAiStatus(): Promise<{
   enabled: boolean;
   budgetCapUsd: number;
   webSearch: boolean;
+  providers?: {
+    claude: boolean;
+    exa: boolean;
+    expedia: boolean;
+    booking: boolean;
+    tavily: boolean;
+  };
 }> {
   try {
     const res = await fetch("/api/status");
@@ -42,13 +55,6 @@ export async function sendChatMessage(
   return post("/api/chat", { messages, context });
 }
 
-export async function fetchDeals(
-  context: ChatContext,
-  focus?: string,
-): Promise<AiResponse> {
-  return post("/api/deals", { context, focus });
-}
-
 export async function exploreSearch(
   query: string,
   type: SearchType,
@@ -56,4 +62,12 @@ export async function exploreSearch(
   localMatches?: string[],
 ): Promise<AiResponse> {
   return post("/api/search", { query, type, context, localMatches });
+}
+
+export async function buildItineraryPlan(
+  context: ChatContext,
+  query?: string,
+  targetDay?: number,
+): Promise<AiResponse> {
+  return post("/api/plan", { query, context, targetDay });
 }
