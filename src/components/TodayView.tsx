@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Calendar, Car, ChevronLeft, ChevronRight, MapPin, RotateCcw } from "lucide-react";
-import { DAY_IMAGE_FOCUS } from "../../lib/images";
+import { ChevronRight } from "lucide-react";
 import { DAYS } from "../data/trip";
 import { useTripStart } from "../hooks/useTripStart";
-import { inDriveUrl, uberUrl } from "../utils/links";
 import { getNudges } from "../utils/nudges";
 import { ActivityRow } from "./ActivityRow";
+import { DaySwipeCard } from "./DaySwipeCard";
+import { TodayDayCard } from "./TodayDayCard";
 import { WeatherCards } from "./WeatherCards";
 
 const TRIP_DAYS = 5;
@@ -25,6 +25,8 @@ export function TodayView() {
   if (!loaded) return null;
 
   const plan = DAYS.find((d) => d.day === viewDay) ?? DAYS[0];
+  const peekPrevPlan = DAYS.find((d) => d.day === viewDay - 1);
+  const peekNextPlan = DAYS.find((d) => d.day === viewDay + 1);
   const isLiveToday =
     tripDay !== null && tripDay >= 1 && tripDay <= TRIP_DAYS && viewDay === tripDay;
   const nudges =
@@ -34,128 +36,75 @@ export function TodayView() {
         : []
       : [{ id: "set-date", text: "Set your trip start date above to unlock day-specific nudges & weather.", urgency: "normal" as const }];
 
-  const nextActivity = plan.activities.find((a) => {
-    if (!a.time) return true;
-    const t = a.time.toLowerCase();
-    if (hour < 12 && (t.includes("morning") || t.includes("early") || t.includes("dawn"))) return true;
-    if (hour >= 12 && hour < 17 && (t.includes("afternoon") || t.includes("mid"))) return true;
-    if (hour >= 17 && t.includes("evening")) return true;
-    return false;
-  }) ?? plan.activities[0];
+  const nextActivity =
+    plan.activities.find((a) => {
+      if (!a.time) return true;
+      const t = a.time.toLowerCase();
+      if (hour < 12 && (t.includes("morning") || t.includes("early") || t.includes("dawn")))
+        return true;
+      if (hour >= 12 && hour < 17 && (t.includes("afternoon") || t.includes("mid")))
+        return true;
+      if (hour >= 17 && t.includes("evening")) return true;
+      return false;
+    }) ?? plan.activities[0];
 
-  const goPrev = () => setViewDay((d) => Math.max(1, d - 1));
-  const goNext = () => setViewDay((d) => Math.min(TRIP_DAYS, d + 1));
+  const cardProps = {
+    tripDays: TRIP_DAYS,
+    startDate,
+    setStartDate,
+    resetStartDate,
+  };
 
   return (
     <div className="today-view">
-      <div className="today-day-carousel">
-        {viewDay > 1 && (
-          <button
-            type="button"
-            className="today-day-nav"
-            onClick={goPrev}
-            aria-label="Previous day"
-          >
-            <ChevronLeft size={22} strokeWidth={1.5} />
-          </button>
-        )}
-
-        <section className="today-hero" aria-label={`Day ${viewDay} itinerary`}>
-        {plan.image && (
-          <div
-            key={viewDay}
-            className="today-hero-media"
-            style={
-              {
-                "--focus": DAY_IMAGE_FOCUS[viewDay as 1 | 2 | 3 | 4 | 5],
-              } as React.CSSProperties
-            }
-          >
-            <img
-              src={plan.image}
-              alt={plan.imageAlt ?? plan.title}
-              className="today-hero-img"
-              loading="eager"
-              decoding="async"
+      <DaySwipeCard
+        canPrev={viewDay > 1}
+        canNext={viewDay < TRIP_DAYS}
+        showSwipeHint={viewDay === 1}
+        onPrev={() => setViewDay((d) => Math.max(1, d - 1))}
+        onNext={() => setViewDay((d) => Math.min(TRIP_DAYS, d + 1))}
+        peekPrev={
+          peekPrevPlan ? (
+            <TodayDayCard
+              plan={peekPrevPlan}
+              viewDay={viewDay - 1}
+              isLiveToday={false}
+              {...cardProps}
             />
-          </div>
-        )}
-        <div className="today-hero-body">
-        <div className="today-hero-top">
-          <div>
-            <span className="today-eyebrow">
-              Day {viewDay} of {TRIP_DAYS}
-              {isLiveToday && <span className="today-eyebrow-today"> · Today</span>}
-            </span>
-            <h2 className="today-title">{plan.title}</h2>
-            {plan.subtitle && <p className="today-subtitle">{plan.subtitle}</p>}
-          </div>
-          <div className="today-date-actions">
-            <label className="today-date-picker">
-              <Calendar size={14} strokeWidth={1.5} />
-              <input
-                type="date"
-                value={startDate ?? ""}
-                onChange={(e) => e.target.value && setStartDate(e.target.value)}
-                aria-label="Trip start date"
-              />
-            </label>
-            {startDate && (
-              <button
-                type="button"
-                className="today-reset-btn"
-                onClick={resetStartDate}
-                aria-label="Reset trip start date"
-              >
-                <RotateCcw size={14} strokeWidth={1.5} />
-                Reset
-              </button>
-            )}
-          </div>
-        </div>
+          ) : undefined
+        }
+        peekNext={
+          peekNextPlan ? (
+            <TodayDayCard
+              plan={peekNextPlan}
+              viewDay={viewDay + 1}
+              isLiveToday={false}
+              {...cardProps}
+            />
+          ) : undefined
+        }
+      >
+        <TodayDayCard
+          plan={plan}
+          viewDay={viewDay}
+          isLiveToday={isLiveToday}
+          nextActivity={isLiveToday ? nextActivity : undefined}
+          {...cardProps}
+        />
+      </DaySwipeCard>
 
-        {isLiveToday && nextActivity && (
-          <div className="next-up-card">
-            <span className="next-up-label">Next up</span>
-            <p className="next-up-text">
-              {nextActivity.time && (
-                <strong>{nextActivity.time} · </strong>
-              )}
-              {nextActivity.text}
-            </p>
-            {nextActivity.rideTo && (
-              <div className="ride-actions ride-actions--inline">
-                <a href={uberUrl(nextActivity.rideTo)} className="ride-btn">
-                  <Car size={12} strokeWidth={1.5} />
-                  Uber
-                </a>
-                <a href={inDriveUrl(nextActivity.rideTo)} className="ride-btn ride-btn--alt">
-                  InDrive
-                </a>
-              </div>
-            )}
-          </div>
-        )}
-
-        {plan.stay && (
-          <div className="today-stay">
-            <MapPin size={14} strokeWidth={1.5} />
-            <span>{plan.stay}</span>
-          </div>
-        )}
-        </div>
-      </section>
-
-        {viewDay < TRIP_DAYS && (
+      <div className="day-swipe-dots" role="tablist" aria-label="Trip day">
+        {Array.from({ length: TRIP_DAYS }, (_, i) => i + 1).map((d) => (
           <button
+            key={d}
             type="button"
-            className="today-day-nav"
-            onClick={goNext}
-            aria-label="Next day"
-          >
-            <ChevronRight size={22} strokeWidth={1.5} />
-          </button>
-        )}
+            role="tab"
+            aria-selected={d === viewDay}
+            aria-label={`Day ${d}`}
+            className={`day-swipe-dot ${d === viewDay ? "day-swipe-dot--active" : ""}`}
+            onClick={() => setViewDay(d)}
+          />
+        ))}
       </div>
 
       {nudges.length > 0 && (
