@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import { ChevronRight } from "lucide-react";
 import { DAYS } from "../data/trip";
+import { useAdjacentDayImages } from "../hooks/useAdjacentDayImages";
 import { useTripStart } from "../hooks/useTripStart";
-import { getNudges } from "../utils/nudges";
-import { ActivityRow } from "./ActivityRow";
 import { DaySwipeCard } from "./DaySwipeCard";
-import { TodayDayCard } from "./TodayDayCard";
-import { WeatherCards } from "./WeatherCards";
+import { TodayDayPage } from "./TodayDayPage";
+import { TodayDayPeek } from "./TodayDayPeek";
+import { TripStartDateBar } from "./TripStartDateBar";
 
 const TRIP_DAYS = 5;
 
@@ -22,41 +21,28 @@ export function TodayView() {
     setViewDay(calendarDay);
   }, [calendarDay]);
 
+  useAdjacentDayImages(viewDay, TRIP_DAYS, startDate);
+
   if (!loaded) return null;
 
   const plan = DAYS.find((d) => d.day === viewDay) ?? DAYS[0];
   const peekPrevPlan = DAYS.find((d) => d.day === viewDay - 1);
   const peekNextPlan = DAYS.find((d) => d.day === viewDay + 1);
-  const isLiveToday =
-    tripDay !== null && tripDay >= 1 && tripDay <= TRIP_DAYS && viewDay === tripDay;
-  const nudges =
-    startDate && tripDay !== null && tripDay >= 1 && tripDay <= TRIP_DAYS
-      ? isLiveToday
-        ? getNudges(tripDay, hour)
-        : []
-      : [{ id: "set-date", text: "Set your trip start date above to unlock day-specific nudges & weather.", urgency: "normal" as const }];
 
-  const nextActivity =
-    plan.activities.find((a) => {
-      if (!a.time) return true;
-      const t = a.time.toLowerCase();
-      if (hour < 12 && (t.includes("morning") || t.includes("early") || t.includes("dawn")))
-        return true;
-      if (hour >= 12 && hour < 17 && (t.includes("afternoon") || t.includes("mid")))
-        return true;
-      if (hour >= 17 && t.includes("evening")) return true;
-      return false;
-    }) ?? plan.activities[0];
-
-  const cardProps = {
+  const pageProps = {
     tripDays: TRIP_DAYS,
+    tripDay,
+    hour,
     startDate,
-    setStartDate,
-    resetStartDate,
   };
 
   return (
     <div className="today-view">
+      <TripStartDateBar
+        startDate={startDate}
+        setStartDate={setStartDate}
+        resetStartDate={resetStartDate}
+      />
       <DaySwipeCard
         canPrev={viewDay > 1}
         canNext={viewDay < TRIP_DAYS}
@@ -65,32 +51,24 @@ export function TodayView() {
         onNext={() => setViewDay((d) => Math.min(TRIP_DAYS, d + 1))}
         peekPrev={
           peekPrevPlan ? (
-            <TodayDayCard
+            <TodayDayPeek
               plan={peekPrevPlan}
               viewDay={viewDay - 1}
-              isLiveToday={false}
-              {...cardProps}
+              tripDays={TRIP_DAYS}
             />
           ) : undefined
         }
         peekNext={
           peekNextPlan ? (
-            <TodayDayCard
+            <TodayDayPeek
               plan={peekNextPlan}
               viewDay={viewDay + 1}
-              isLiveToday={false}
-              {...cardProps}
+              tripDays={TRIP_DAYS}
             />
           ) : undefined
         }
       >
-        <TodayDayCard
-          plan={plan}
-          viewDay={viewDay}
-          isLiveToday={isLiveToday}
-          nextActivity={isLiveToday ? nextActivity : undefined}
-          {...cardProps}
-        />
+        <TodayDayPage plan={plan} viewDay={viewDay} {...pageProps} />
       </DaySwipeCard>
 
       <div className="day-swipe-dots" role="tablist" aria-label="Trip day">
@@ -106,44 +84,6 @@ export function TodayView() {
           />
         ))}
       </div>
-
-      {nudges.length > 0 && (
-        <section className="nudge-stack">
-          {nudges.map((n) => (
-            <div
-              key={n.id}
-              className={`nudge-card ${n.urgency === "high" ? "nudge-card--urgent" : ""}`}
-            >
-              {n.text}
-            </div>
-          ))}
-        </section>
-      )}
-
-      <section className="today-section">
-        <h3 className="section-title">
-          {isLiveToday ? "Weather today" : `Weather · Day ${viewDay}`}
-        </h3>
-        <WeatherCards tripDay={startDate ? viewDay : null} compact />
-      </section>
-
-      <section className="today-section">
-        <h3 className="section-title">
-          {isLiveToday ? "Today's plan" : `Day ${viewDay} plan`}
-        </h3>
-        <ul className="activity-list today-activities">
-          {plan.activities.map((a, i) => (
-            <ActivityRow key={i} activity={a} />
-          ))}
-        </ul>
-      </section>
-
-      {isLiveToday && tripDay !== null && tripDay < TRIP_DAYS && (
-        <p className="today-footer-hint">
-          Tomorrow: {DAYS[tripDay]?.title}
-          <ChevronRight size={12} style={{ verticalAlign: "middle" }} />
-        </p>
-      )}
     </div>
   );
 }

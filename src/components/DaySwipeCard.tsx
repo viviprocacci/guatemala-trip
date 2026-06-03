@@ -256,7 +256,7 @@ export function DaySwipeCard({
       )}
       <div
         ref={cardRef}
-        className="day-swipe-card day-swipe-card--active"
+        className={`day-swipe-card day-swipe-card--active${isDragging || transitioning ? " day-swipe-card--moving" : ""}`}
         style={activeStyle}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}

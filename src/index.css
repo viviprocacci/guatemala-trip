@@ -165,16 +165,20 @@ button, input, select, textarea { font-family: inherit; }
   z-index: 1;
 }
 
-.day-swipe-card--behind .today-day-card {
+.day-swipe-card--behind .today-day-peek {
   box-shadow: var(--shadow-sm);
+}
+
+.day-swipe-card--moving {
+  will-change: transform;
 }
 
 .day-swipe-card--active {
   position: relative;
   z-index: 1;
-  transform-origin: center 82%;
+  transform-origin: center 55%;
   cursor: grab;
-  touch-action: none;
+  touch-action: pan-y;
 }
 
 .day-swipe-inner {
@@ -224,18 +228,130 @@ button, input, select, textarea { font-family: inherit; }
   transform: scale(1.25);
 }
 
-.today-hero.today-day-card {
+.today-day-page {
   background: var(--surface);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
   box-shadow: 0 10px 36px rgba(26, 24, 22, 0.14);
   border: 1px solid var(--border-light);
 }
 
-.today-hero {
+.today-day-page__body {
+  padding: 1.25rem 1.35rem 1.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.today-day-page__head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+/* Trip start — fixed above swipe stack, not inside the card */
+.trip-start-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  margin-bottom: 0.15rem;
+  position: relative;
+  z-index: 2;
+}
+
+.trip-start-bar__btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border-light);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--text-soft);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.2s var(--ease), background 0.2s var(--ease);
+  overflow: hidden;
+}
+
+.trip-start-bar__label {
+  position: relative;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.trip-start-bar__btn strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.trip-start-bar__btn:hover {
+  border-color: var(--border);
+  background: var(--accent-soft);
+}
+
+.trip-start-bar__input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  opacity: 0;
+  cursor: pointer;
+  z-index: 1;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.trip-start-bar__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+}
+
+.trip-start-bar__clear:hover {
+  color: var(--text-soft);
+  background: var(--bg);
+}
+
+.today-day-page .nudge-stack {
+  gap: 0.5rem;
+}
+
+.today-day-page .today-footer-hint {
+  padding-top: 0.15rem;
+}
+
+.today-day-peek {
   background: var(--surface);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  box-shadow: var(--shadow);
   border: 1px solid var(--border-light);
+}
+
+.today-day-peek__body {
+  padding: 1rem 1.2rem 1.15rem;
+}
+
+.today-day-peek__meta {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  color: var(--muted);
 }
 
 .today-hero-media {
@@ -295,54 +411,6 @@ button, input, select, textarea { font-family: inherit; }
   color: var(--muted);
   font-style: italic;
 }
-
-.today-date-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.35rem;
-  flex-shrink: 0;
-}
-
-.today-date-picker {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.4rem 0.6rem;
-  background: var(--bg);
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  color: var(--muted);
-}
-
-.today-reset-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem 0.5rem;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: var(--muted);
-  cursor: pointer;
-}
-
-.today-reset-btn:hover {
-  color: var(--text-soft);
-  background: var(--bg);
-}
-
-.today-date-picker input {
-  border: none;
-  background: transparent;
-  font-size: 0.6875rem;
-  color: var(--text-soft);
-  width: 5.5rem;
-}
-
-.today-date-picker input:focus { outline: none; }
 
 .next-up-card {
   background: linear-gradient(135deg, var(--accent-soft) 0%, var(--lake-soft) 100%);

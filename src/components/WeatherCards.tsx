@@ -3,6 +3,18 @@ import { Cloud, Droplets, Wind } from "lucide-react";
 import type { WeatherForecast } from "../types";
 import { fetchWeather, weatherLabel, WEATHER_SPOTS, weatherSpotsForDay } from "../services/weather";
 
+const weatherCache = new Map<number, WeatherForecast[]>();
+
+/** Warm cache for upcoming swipes (fire-and-forget). */
+export function prefetchWeatherForDay(tripDay: number) {
+  if (weatherCache.has(tripDay)) return;
+  const spotIds = weatherSpotsForDay(tripDay);
+  const spots = WEATHER_SPOTS.filter((s) => spotIds.includes(s.id));
+  fetchWeather(spots)
+    .then((data) => weatherCache.set(tripDay, data))
+    .catch(() => {});
+}
+
 interface WeatherCardsProps {
   tripDay: number | null;
   compact?: boolean;
@@ -40,13 +52,22 @@ function placeholderCards(tripDay: number | null, compact?: boolean) {
 }
 
 export function WeatherCards({ tripDay, compact }: WeatherCardsProps) {
-  const [forecasts, setForecasts] = useState<WeatherForecast[]>([]);
-  const [loading, setLoading] = useState(tripDay != null);
+  const cached = tripDay != null ? weatherCache.get(tripDay) : undefined;
+  const [forecasts, setForecasts] = useState<WeatherForecast[]>(cached ?? []);
+  const [loading, setLoading] = useState(tripDay != null && !cached);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     if (tripDay == null) {
       setForecasts([]);
+      setLoading(false);
+      setError(false);
+      return;
+    }
+
+    const hit = weatherCache.get(tripDay);
+    if (hit) {
+      setForecasts(hit);
       setLoading(false);
       setError(false);
       return;
@@ -61,7 +82,10 @@ export function WeatherCards({ tripDay, compact }: WeatherCardsProps) {
 
     fetchWeather(spots)
       .then((data) => {
-        if (!cancelled) setForecasts(data);
+        if (!cancelled) {
+          weatherCache.set(tripDay, data);
+          setForecasts(data);
+        }
       })
       .catch(() => {
         if (!cancelled) setError(true);
