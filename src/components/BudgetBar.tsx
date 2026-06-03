@@ -1,6 +1,7 @@
-import { Zap } from "lucide-react";
+import { Droplets } from "lucide-react";
 import { BUDGET_CAP_USD } from "../../lib/ai/types";
 import { formatBudgetUsd } from "../hooks/useAiBudget";
+import { PedroEngineCredit } from "./PedroEngineCredit";
 
 interface BudgetBarProps {
   spentUsd: number;
@@ -17,26 +18,43 @@ export function BudgetBar({
   webSearch,
   compact,
 }: BudgetBarProps) {
+  const juicePercent = Math.max(0, Math.min(100, 100 - percentUsed));
+  const low = juicePercent <= 20;
+  const showUsed = spentUsd > 0.01;
+
   return (
-    <div className={`fuel-gauge ${compact ? "fuel-gauge--compact" : ""}`}>
-      <div className="fuel-gauge-top">
-        <span className="fuel-gauge-label">
-          <Zap size={11} />
-          Pedro
+    <div
+      className={[
+        "pedro-juice",
+        compact && "pedro-juice--compact",
+        low && "pedro-juice--low",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      role="meter"
+      aria-valuenow={Math.round(juicePercent)}
+      aria-valuemin={0}
+      aria-valuemax={100}
+      aria-label={`Pedro juice: $${formatBudgetUsd(remainingUsd)} left of $${BUDGET_CAP_USD} limit`}
+    >
+      <div className="pedro-juice-top">
+        <span className="pedro-juice-label">
+          <Droplets size={13} strokeWidth={2} className="pedro-juice-icon" />
+          Pedro juice
+          <span className="pedro-juice-limit">${BUDGET_CAP_USD} limit</span>
         </span>
-        <span className="fuel-gauge-amount">
-          ${formatBudgetUsd(remainingUsd)} left
-        </span>
+        <span className="pedro-juice-amount">${formatBudgetUsd(remainingUsd)} left</span>
       </div>
-      <div className="fuel-gauge-track">
-        <div className="fuel-gauge-fill" style={{ width: `${percentUsed}%` }} />
+      <div className="pedro-juice-track">
+        <div className="pedro-juice-fill" style={{ width: `${juicePercent}%` }} />
       </div>
       {!compact && (
-        <p className="fuel-gauge-hint">
-          ${formatBudgetUsd(spentUsd)} used · ${BUDGET_CAP_USD} cap per device
-          {webSearch ? " · live web scan on" : ""}
-          {" · "}
-          <span className="pedro-engine pedro-engine--inline">powered by claude</span>
+        <p className="pedro-juice-hint">
+          {showUsed && <>${formatBudgetUsd(spentUsd)} used</>}
+          {showUsed && webSearch && " · "}
+          {webSearch && "live web scan on"}
+          {(showUsed || webSearch) && " · "}
+          <PedroEngineCredit inline />
         </p>
       )}
     </div>

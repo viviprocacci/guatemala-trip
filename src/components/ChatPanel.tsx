@@ -23,12 +23,24 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
-  const bottomRef = useRef<HTMLDivElement>(null);
+  const messagesRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const pageScrollYRef = useRef(0);
 
-  const scrollToBottom = () => {
-    requestAnimationFrame(() =>
-      bottomRef.current?.scrollIntoView({ behavior: "smooth" }),
-    );
+  const scrollMessagesToBottom = (smooth = false) => {
+    const el = messagesRef.current;
+    if (!el) return;
+    el.scrollTo({
+      top: el.scrollHeight,
+      behavior: smooth ? "smooth" : "instant",
+    });
+  };
+
+  const lockPageScroll = () => {
+    pageScrollYRef.current = window.scrollY;
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: pageScrollYRef.current, behavior: "instant" });
+    });
   };
 
   const submit = async (text: string) => {
@@ -47,7 +59,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
         },
       ]);
       setInput("");
-      scrollToBottom();
+      scrollMessagesToBottom(true);
       return;
     }
 
@@ -58,7 +70,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
           id: crypto.randomUUID(),
           role: "assistant",
           content:
-            "Pedro's taking a breather on this device (~$5 cap). Clear site data to reset.",
+            "Pedro juice is empty — you've hit the $5 limit on this device. Clear site data to refill.",
           timestamp: new Date().toISOString(),
         },
       ]);
@@ -75,7 +87,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
     setMessages(history);
     setInput("");
     setLoading(true);
-    scrollToBottom();
+    scrollMessagesToBottom(true);
 
     try {
       if (!aiEnabled) {
@@ -125,9 +137,29 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
       ]);
     } finally {
       setLoading(false);
-      scrollToBottom();
+      scrollMessagesToBottom(true);
     }
   };
+
+  useEffect(() => {
+    const inputEl = inputRef.current;
+    const vv = window.visualViewport;
+    if (!inputEl || !vv) return;
+
+    const onViewportChange = () => {
+      if (document.activeElement === inputEl) lockPageScroll();
+    };
+
+    inputEl.addEventListener("focus", lockPageScroll);
+    vv.addEventListener("resize", onViewportChange);
+    vv.addEventListener("scroll", onViewportChange);
+
+    return () => {
+      inputEl.removeEventListener("focus", lockPageScroll);
+      vv.removeEventListener("resize", onViewportChange);
+      vv.removeEventListener("scroll", onViewportChange);
+    };
+  }, []);
 
   useEffect(() => {
     if (seededRef.current) return;
@@ -158,7 +190,7 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
             </button>
           ))}
         </div>
-        <div className="chat-messages">
+        <div className="chat-messages" ref={messagesRef}>
           {messages.map((m) => (
             <div key={m.id} className={`msg ${m.role}`}>
               {formatMarkdownLite(m.content)}
@@ -169,7 +201,6 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
               <span className="scan-dots">Pedro's on it</span>
             </div>
           )}
-          <div ref={bottomRef} />
         </div>
       </div>
       <div className="chat-footer">
@@ -181,10 +212,12 @@ export function ChatPanel({ aiEnabled }: { aiEnabled: boolean }) {
           }}
         >
           <input
+            ref={inputRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask Pedro anything about your trip…"
             disabled={loading}
+            enterKeyHint="send"
           />
           <button type="submit" className="btn-primary btn-send" disabled={loading || !input.trim()}>
             <Send size={16} strokeWidth={1.5} />

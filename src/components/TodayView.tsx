@@ -13,7 +13,6 @@ export function TodayView() {
 
   if (!loaded) return null;
 
-  const dayNum = tripDay ?? 1;
   const effectiveDay = tripDay !== null && tripDay >= 1 && tripDay <= 5 ? tripDay : 1;
   const plan = DAYS.find((d) => d.day === effectiveDay) ?? DAYS[0];
   const nudges =
@@ -109,7 +108,7 @@ export function TodayView() {
 
       <section className="today-section">
         <h3 className="section-title">Weather today</h3>
-        <WeatherCards tripDay={dayNum} compact />
+        <WeatherCards tripDay={tripDay} compact />
       </section>
 
       <section className="today-section">

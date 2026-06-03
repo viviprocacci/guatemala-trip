@@ -15,10 +15,8 @@ import { ExploreView } from "./components/ExploreView";
 import { ItineraryView } from "./components/ItineraryView";
 import { PhrasesView } from "./components/PhrasesView";
 import { WalletView } from "./components/WalletView";
+import { TripMap } from "./components/TripMap";
 
-const TripMap = lazy(() =>
-  import("./components/TripMap").then((m) => ({ default: m.TripMap })),
-);
 const AiView = lazy(() =>
   import("./components/AiView").then((m) => ({ default: m.AiView })),
 );

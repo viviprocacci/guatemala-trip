@@ -4,18 +4,21 @@ import { VitePWA } from "vite-plugin-pwa";
 import { chatApiPlugin } from "./vite.chat-api";
 
 export default defineConfig({
+  optimizeDeps: {
+    include: ["leaflet"],
+  },
   plugins: [
     react(),
     chatApiPlugin(),
     VitePWA({
       registerType: "autoUpdate",
-      includeAssets: ["icon.svg"],
+      includeAssets: ["icon.svg", "favicon.ico"],
       manifest: {
         name: "Guatemala Trip",
         short_name: "Guatemala",
         description: "5-day itinerary — Acatenango & Lake Atitlán",
         theme_color: "#1a1816",
-        background_color: "#f7f5f1",
+        background_color: "#f5f0e8",
         display: "standalone",
         start_url: "/",
         icons: [

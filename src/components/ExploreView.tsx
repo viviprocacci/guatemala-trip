@@ -137,7 +137,7 @@ export function ExploreView() {
       return;
     }
     if (!budget.canUse) {
-      setAiMessage("Pedro's taking a breather. Clear site data to reset the meter.");
+      setAiMessage("Pedro juice is empty — $5 limit reached on this device. Clear site data to refill.");
       return;
     }
 

@@ -8,17 +8,55 @@ interface WeatherCardsProps {
   compact?: boolean;
 }
 
+function placeholderCards(tripDay: number | null, compact?: boolean) {
+  const spotIds = weatherSpotsForDay(tripDay ?? 1);
+  const spots = WEATHER_SPOTS.filter((s) => spotIds.includes(s.id));
+
+  return (
+    <div
+      className={`weather-row weather-row--locked ${compact ? "weather-row--compact" : ""}`}
+      aria-label="Weather — set trip start date to load forecast"
+    >
+      {spots.map((spot) => (
+        <article key={spot.id} className="weather-card weather-card--placeholder">
+          <span className="weather-card-label">{spot.label}</span>
+          <div className="weather-card-temps">
+            <strong>—°F</strong>
+            <span>—°F</span>
+          </div>
+          <p className="weather-card-desc">
+            <Cloud size={12} strokeWidth={1.5} />
+            Set date
+          </p>
+          <div className="weather-card-meta">
+            <span>
+              <Wind size={11} /> — mph
+            </span>
+          </div>
+        </article>
+      ))}
+    </div>
+  );
+}
+
 export function WeatherCards({ tripDay, compact }: WeatherCardsProps) {
   const [forecasts, setForecasts] = useState<WeatherForecast[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(tripDay != null);
   const [error, setError] = useState(false);
 
   useEffect(() => {
+    if (tripDay == null) {
+      setForecasts([]);
+      setLoading(false);
+      setError(false);
+      return;
+    }
+
     let cancelled = false;
     setLoading(true);
     setError(false);
 
-    const spotIds = weatherSpotsForDay(tripDay ?? 1);
+    const spotIds = weatherSpotsForDay(tripDay);
     const spots = WEATHER_SPOTS.filter((s) => spotIds.includes(s.id));
 
     fetchWeather(spots)
@@ -36,6 +74,10 @@ export function WeatherCards({ tripDay, compact }: WeatherCardsProps) {
       cancelled = true;
     };
   }, [tripDay]);
+
+  if (tripDay == null) {
+    return placeholderCards(tripDay, compact);
+  }
 
   if (loading) {
     return <div className="weather-row weather-row--loading">Loading forecast…</div>;

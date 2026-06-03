@@ -2,7 +2,7 @@ import type { Plugin, PreviewServer, ViteDevServer } from "vite";
 import { loadEnv } from "vite";
 import { runExploreSearch } from "./lib/ai/search";
 import { runItineraryPlan } from "./lib/ai/itinerary";
-import { runMapPlaceSearch } from "./lib/ai/mapSearch";
+import { runMapPlaceSearch } from "./lib/geo/mapPlaceSearch";
 import { runTranslate } from "./lib/ai/translate";
 import type { ChatContext } from "./lib/ai/types";
 import { buildSystemPrompt } from "./lib/ai/prompts";
@@ -83,7 +83,7 @@ function attachApiRoutes(server: ViteDevServer | PreviewServer) {
     try {
       const { query } = JSON.parse(await readBody(req)) as { query?: string };
       if (!query?.trim()) return json(res, 400, { error: "query required" });
-      const result = await runMapPlaceSearch(query.trim(), env);
+      const result = await runMapPlaceSearch(query.trim());
       json(res, 200, result);
     } catch (e) {
       json(res, 500, { error: e instanceof Error ? e.message : "Failed" });

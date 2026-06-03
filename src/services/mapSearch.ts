@@ -3,11 +3,8 @@ export interface MapPlaceSearchResult {
   lat: number;
   lng: number;
   notes?: string;
-  sourceUrl?: string;
   address?: string;
-  usedExa: boolean;
-  usage?: { input_tokens: number; output_tokens: number };
-  costUsd?: number;
+  sourceUrl?: string;
 }
 
 export async function mapPlaceSearch(query: string): Promise<MapPlaceSearchResult> {

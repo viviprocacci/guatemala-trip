@@ -302,7 +302,7 @@ export function PhrasesView() {
               />
               <Sparkles size={14} />
               Natural Guatemalan Spanish (enhanced)
-              {!budget.canUse && " (budget used)"}
+              {!budget.canUse && " (no juice)"}
             </label>
           )}
 

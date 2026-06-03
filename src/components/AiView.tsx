@@ -16,7 +16,7 @@ export function AiView() {
             <h2 className="wow-hero-title">Pedro</h2>
             <p className="wow-hero-tagline">Your travel companion</p>
           </div>
-          <PedroEngineCredit className="pedro-engine--side" />
+          <PedroEngineCredit className="claude-badge--side" />
         </div>
         <p className="wow-hero-sub">
           ¡Bienvenidos! I'm here to help you make the most of your trip. Ask me anything about Guatemala.

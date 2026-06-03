@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { runMapPlaceSearch } from "../lib/ai/mapSearch";
+import { runMapPlaceSearch } from "../lib/geo/mapPlaceSearch";
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== "POST") {
@@ -12,7 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: "query required" });
     }
 
-    const result = await runMapPlaceSearch(query.trim(), process.env);
+    const result = await runMapPlaceSearch(query.trim());
     return res.status(200).json(result);
   } catch (e) {
     return res.status(500).json({
