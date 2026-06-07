@@ -4,23 +4,6 @@
 
 ## Deploy to Vercel (share with friends)
 
-1. Push this folder to GitHub
-2. Import at [vercel.com/new](https://vercel.com/new)
-3. Add **Environment Variables** (Production):
-   - `ANTHROPIC_API_KEY` — from [console.anthropic.com](https://console.anthropic.com/)
-   - `TAVILY_API_KEY` — optional, for live deal web search ([tavily.com](https://tavily.com))
-4. Deploy → share the URL (e.g. `https://your-trip.vercel.app`)
-
-Friends open the link on their phone → **Share → Add to Home Screen** for app-like experience.
-
-### Protect your $5 budget
-
-1. **Anthropic Console** → Billing → set **hard spending limit $5** (this is the real enforcement)
-2. App shows a **$5 budget meter** per device (estimate from token usage)
-3. Use `ANTHROPIC_MODEL=claude-haiku-4-5-20251001` for cheaper chat
-
-**Important:** Everyone using your link shares one API key. The Anthropic spending limit protects you globally; the in-app meter is per-browser.
-
 ## AI features
 
 | Feature | What it does |
